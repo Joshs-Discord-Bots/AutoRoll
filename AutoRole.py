@@ -13,8 +13,7 @@ intents.guilds = True
 
 prefix = '.'
 
-activity = discord.Activity(type=discord.ActivityType.playing, name=f"{prefix}help")
-# activity = discord.Game(name=f"{prefix}help")
+activity = discord.Game(name=f"{prefix}help")
 bot = commands.Bot(command_prefix = prefix, intents=intents, activity=activity, status=discord.Status.online, case_insensitive=True)
 bot.remove_command('help')
 
