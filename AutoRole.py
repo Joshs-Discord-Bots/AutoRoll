@@ -28,7 +28,11 @@ activity = discord.Activity(type=discord.ActivityType.watching, name="!help")
 activity = discord.Game(name='Autorole')
 bot = commands.Bot(command_prefix = prefix, intents=intents, activity=activity, status=discord.Status.idle, case_insensitive=True)
 bot.remove_command("help")
-bot.token = 'ODYzNTk3NDAyMjcwMDcyODM0.YOpNwQ.XOGnIwjcMKLk5r-2rSgs2NFl3BA'
+
+bot.token = 'TOKEN'
+with open('token.txt') as f:
+    bot.token = f.readlines()
+
 bot.id = 863597402270072834
 bot.admins = [
 	285311305253126145 # Josh
