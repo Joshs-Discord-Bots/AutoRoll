@@ -239,6 +239,12 @@ async def translate(ctx, type='scramble'):
 	else:
 		await ctx.send('Usage: .translate <scramble/fix/country_code')
 
+@bot.command()
+async def test():
+	os.system('run.bat')
+	quit()
+
+
 
 
 #endregion
