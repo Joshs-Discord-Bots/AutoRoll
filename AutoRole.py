@@ -245,7 +245,7 @@ async def reload(ctx):
 		os.system('run.bat')
 		quit()
 	else:
-		await ctx.send('You do not have aaaaaaaaaa to do that!')
+		await ctx.send('You do not have permission to do that!')
 
 
 
