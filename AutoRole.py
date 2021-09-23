@@ -1,6 +1,3 @@
-# Invite: https://discord.com/api/oauth2/authorize?bot_id=863597402270072834&permissions=8&scope=bot
-# Guild ID: 330974948870848512
-
 #region ------------------------------------------------------ SETUP -------------------------------------------------
 
 from os import system
@@ -31,7 +28,7 @@ bot.remove_command("help")
 
 bot.token = 'TOKEN'
 with open('token.txt') as f:
-    bot.token = f.readlines()
+    bot.token = f.read()
 
 bot.id = 863597402270072834
 bot.admins = [
