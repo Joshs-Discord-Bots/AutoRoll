@@ -240,7 +240,7 @@ async def translate(ctx, type='scramble'):
 		await ctx.send('Usage: .translate <scramble/fix/country_code')
 
 @bot.command()
-async def test():
+async def test(ctx):
 	os.system('run.bat')
 	quit()
 
