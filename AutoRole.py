@@ -245,9 +245,9 @@ async def translate(ctx, type='scramble'):
 
 #region ----------------------------------------------------- COGS -------------------------------------------------
 
-for filename in os.listdir('./cogs'):
-	if filename.endswith('.py'):
-		bot.load_extension(f'cogs.{filename[:-3]}')
+# for filename in os.listdir('./cogs'):
+# 	if filename.endswith('.py'):
+# 		bot.load_extension(f'cogs.{filename[:-3]}')
 
 # conda create -n joshdiscord
 # conda activate joshdiscord
