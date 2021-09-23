@@ -13,17 +13,8 @@ intents.guilds = True
 
 prefix = '.'
 
-#region status
-'''
-activity = discord.Streaming(name="!help", url="twitch_url_here")
-activity = discord.Activity(type=discord.ActivityType.listening, name="!help")
-activity = discord.Activity(type=discord.ActivityType.watching, name="!help")
-'''
 activity = discord.Activity(type=discord.ActivityType.playing, name=f"{prefix}help")
-#endregion
-
-#activity = discord.Game(name=f"{prefix}help")
-activity = discord.Game(name='Autorole')
+# activity = discord.Game(name=f"{prefix}help")
 bot = commands.Bot(command_prefix = prefix, intents=intents, activity=activity, status=discord.Status.online, case_insensitive=True)
 bot.remove_command('help')
 
