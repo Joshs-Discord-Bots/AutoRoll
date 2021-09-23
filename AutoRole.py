@@ -24,13 +24,12 @@ activity = discord.Activity(type=discord.ActivityType.watching, name="!help")
 #activity = discord.Game(name=f"{prefix}help")
 activity = discord.Game(name='Autorole')
 bot = commands.Bot(command_prefix = prefix, intents=intents, activity=activity, status=discord.Status.idle, case_insensitive=True)
-bot.remove_command("help")
+bot.remove_command('help')
 
 bot.token = 'TOKEN'
 with open('token.txt') as f:
     bot.token = f.read()
 
-bot.id = 863597402270072834
 bot.admins = [
 	285311305253126145 # Josh
 	]
@@ -126,23 +125,6 @@ async def ping(ctx):
 	await ctx.send('Pong!')
 
 @bot.command()
-async def help(ctx):
-	pass
-	embed = discord.Embed ( # Message
-		title='Help Commands',
-		description=f'Listing commands...',
-		colour=discord.Colour.blue()
-	)
-	embed.add_field(name=f'{prefix}autoreact', value="Toggles the upvote/downvote reacts by the bot", inline=False)
-	embed.add_field(name=f'{prefix}funnyScore <user>', value="Returns stats on the user's memes", inline=False)
-	embed.add_field(name=f'{prefix}leaderboard', value="Displays the top 5 funniest members on the server", inline=False)
-	embed.add_field(name=f'{prefix}xp', value="Displays user's xp", inline=False)
-	embed.add_field(name=f'{prefix}die', value="die", inline=False)
-	embed.add_field(name=f'--- XP ---', value="Users gain XP by posting memes or recieving upvotes.\nUpvoting/Downvoting costs 1 XP.", inline=False)
-	msg = await ctx.send(embed=embed)
-
-
-@bot.command()
 async def reload(ctx):
 	if admin(ctx):
 		await ctx.send('Reloading...')
@@ -151,16 +133,25 @@ async def reload(ctx):
 	else:
 		await ctx.send('You do not have permission to do that!')
 
-
-
+@bot.command()
+async def help(ctx):
+	pass
+	embed = discord.Embed ( # Message
+		title='Help Commands',
+		description=f'Listing commands...',
+		colour=discord.Colour.blue()
+	)
+	# embed.add_field(name=f'{prefix}die', value="die", inline=False)
+	await ctx.send(embed=embed)
 
 #endregion
 
 #region ----------------------------------------------------- COGS -------------------------------------------------
-blacklist = ['music.py', 'translate.py']
+blacklist = ['template.py', 'funny_score.py', 'music.py', 'translate.py']
 
 for filename in os.listdir('./cogs'):
 	if filename.endswith('.py') and filename not in blacklist:
 		bot.load_extension(f'cogs.{filename[:-3]}')
 
 bot.run(bot.token)
+#endregion
