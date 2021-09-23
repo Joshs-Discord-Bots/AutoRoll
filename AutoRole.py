@@ -242,6 +242,7 @@ async def translate(ctx, type='scramble'):
 @bot.command()
 async def reload(ctx):
 	if admin(ctx):
+		await ctx.send('Reloading...')
 		os.system('run.bat')
 		quit()
 	else:
