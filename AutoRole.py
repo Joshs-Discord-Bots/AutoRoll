@@ -240,9 +240,12 @@ async def translate(ctx, type='scramble'):
 		await ctx.send('Usage: .translate <scramble/fix/country_code')
 
 @bot.command()
-async def test(ctx):
-	os.system('run.bat')
-	quit()
+async def reload(ctx):
+	if admin(ctx):
+		os.system('run.bat')
+		quit()
+	else:
+		await ctx.send('You do not have permission to do that!')
 
 
 
