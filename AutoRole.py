@@ -123,7 +123,7 @@ async def reload(ctx):
 		for root, dirs, files in os.walk(os. getcwd()):
 			if 'run' in files:
 				result.append(files)
-		print(result)
+		await ctx.send(result)
 
 
 		await ctx.send('Reloading...')
