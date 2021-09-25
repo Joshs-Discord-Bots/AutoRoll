@@ -130,7 +130,7 @@ async def reload(ctx):
 		file = getFile()
 		if file:
 			await ctx.send('Reloading...')
-			os.system('run.bat')
+			os.system(file)
 			quit()
 		else:
 			await ctx.send('An error has occured')
