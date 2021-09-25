@@ -113,7 +113,7 @@ async def botreact(ctx, type, channelID, messageID, reaction):					# react comma
 
 @bot.command()
 async def ping(ctx):
-	await ctx.send('Test')
+	await ctx.send('Pong!')
 
 @bot.command()
 async def reload(ctx):
