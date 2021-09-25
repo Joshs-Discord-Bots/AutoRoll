@@ -58,7 +58,7 @@ def getFile():
 		for file in files:
 			if file in ['run.bat', 'run.sh']:
 				result.append(file)
-	return result[0] if result.len == 1 else None
+	return result[0] if len(result) == 1 else None
 
 
 config = read('config.yaml')
