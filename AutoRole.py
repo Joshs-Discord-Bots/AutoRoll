@@ -52,6 +52,15 @@ def admin(ctx):
 		]
 	return True if ctx.author.id in admins else False
 
+def getFile():
+	result = []
+	for root, dirs, files in os.walk(os. getcwd()):
+		for file in files:
+			if file in ['run.bat', 'run.sh']:
+				result.append(file)
+	return result[0] if result.len == 1 else None
+
+
 config = read('config.yaml')
 
 #endregion
@@ -118,17 +127,13 @@ async def ping(ctx):
 @bot.command()
 async def reload(ctx):
 	if admin(ctx):
-
-		result = []
-		for root, dirs, files in os.walk(os. getcwd()):
-			if 'run' in files:
-				result.append(files)
-		await ctx.send(result)
-
-
-		await ctx.send('Reloading...')
-		os.system('run.bat')
-		quit()
+		file = getFile()
+		if file:
+			await ctx.send('Reloading...')
+			os.system('run.bat')
+			quit()
+		else:
+			await ctx.send('An error has occured')
 	else:
 		await ctx.send('You do not have permission to do that!')
 
