@@ -118,6 +118,14 @@ async def ping(ctx):
 @bot.command()
 async def reload(ctx):
 	if admin(ctx):
+
+		result = []
+		for root, dirs, files in os.walk(os. getcwd()):
+			if 'run' in files:
+				result.append(files)
+		print(result)
+
+
 		await ctx.send('Reloading...')
 		os.system('run.bat')
 		quit()
