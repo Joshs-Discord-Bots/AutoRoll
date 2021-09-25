@@ -11,7 +11,7 @@ intents.messages = True
 intents.members = True
 intents.guilds = True
 
-prefix = '.'
+prefix = '$'
 
 activity = discord.Game(name=f"{prefix}help")
 bot = commands.Bot(command_prefix = prefix, intents=intents, activity=activity, status=discord.Status.online, case_insensitive=True)
