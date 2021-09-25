@@ -17,7 +17,6 @@ activity = discord.Game(name=f"{prefix}help")
 bot = commands.Bot(command_prefix = prefix, intents=intents, activity=activity, status=discord.Status.online, case_insensitive=True)
 bot.remove_command('help')
 
-bot.id = bot.user.id
 
 bot.token = 'TOKEN'
 with open('token.txt') as f:
