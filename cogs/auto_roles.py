@@ -89,7 +89,7 @@ class AutoRole(commands.Cog):
 
 	@commands.Cog.listener()
 	async def on_raw_reaction_add(self, ctx):											# React to message
-		if ctx.user_id == self.bot.id or ctx.message_id not in self.messageList:
+		if ctx.user_id == self.bot.user.id or ctx.message_id not in self.messageList:
 			return
 
 		if ctx.message_id in self.messageList:
