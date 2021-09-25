@@ -130,6 +130,7 @@ async def reload(ctx):
 		file = getFile()
 		if file:
 			await ctx.send('Reloading...')
+			await ctx.send(file)
 			os.system(file)
 			quit()
 		else:
