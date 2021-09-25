@@ -131,7 +131,10 @@ async def reload(ctx):
 		if file:
 			await ctx.send('Reloading...')
 			await ctx.send(file)
-			os.system(file)
+			if file[:-3] == '.sh':
+				os.popen('./'.file)
+			else:
+				os.system(file)
 			quit()
 		else:
 			await ctx.send('An error has occured')
