@@ -133,7 +133,7 @@ async def reload(ctx):
 			await ctx.send(file)
 			if file.endswith('.sh'):
 				await ctx.send('test')
-				os.system('./'.file)
+				os.system('./'+file)
 			else:
 				os.system(file)
 			quit()
