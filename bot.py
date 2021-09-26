@@ -61,7 +61,10 @@ def write(data, writeFilename):
 	return
 
 def admin(ctx):
-	return True if ctx.author.id in bot.admins else False
+	if len(bot.admins) > 0:
+		return True if ctx.author.id in bot.admins else False
+	else:
+		return False
 
 config = read('config.yaml')
 
