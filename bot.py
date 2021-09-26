@@ -7,6 +7,7 @@ import os
 import platform
 import yaml
 import json
+from time import sleep
 
 if not os.path.isfile('config.json'):
 	def_config = {
@@ -132,7 +133,9 @@ async def ping(ctx):
 @bot.command()
 async def reload(ctx):
 	if admin(ctx):
-		await ctx.send('Reloading...')
+		msg = await ctx.send('Reloading...')
+		sleep(1000)
+		await ctx.delete(msg)
 		if platform.system() == 'Windows' and os.path.isfile('run.bat'):
 			os.system('run.bat')
 			quit()
