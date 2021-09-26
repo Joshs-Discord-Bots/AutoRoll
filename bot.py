@@ -33,7 +33,11 @@ print('Booting Up...')
 
 #region ------------------------------------------------- CUSTOM FUNCTIONS -------------------------------------------
 
-clear = lambda: system('cls') #on Windows System
+def clear():
+	if platform.system() == 'Windows':
+		system('cls')
+	else:
+		system('clear')
 
 def read(readFilename):
 	try:
