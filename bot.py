@@ -26,9 +26,6 @@ bot.admins = [
 	285311305253126145 # Josh
 	]
 
-system('cls')
-print('Booting Up...')
-
 #endregion
 
 #region ------------------------------------------------- CUSTOM FUNCTIONS -------------------------------------------
@@ -37,7 +34,8 @@ def clear():
 	if platform.system() == 'Windows':
 		system('cls')
 	else:
-		system('clear')
+		# system('clear')
+		pass
 
 def read(readFilename):
 	try:
@@ -156,5 +154,10 @@ for filename in os.listdir('./cogs'):
 	if filename.endswith('.py') and filename not in blacklist:
 		bot.load_extension(f'cogs.{filename[:-3]}')
 
-bot.run(bot.token)
 #endregion
+
+
+clear()
+print('Booting Up...')
+
+bot.run(bot.token)
