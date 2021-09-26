@@ -4,6 +4,7 @@ from os import system
 import discord
 from discord.ext import commands
 import os
+import platform
 import yaml
 
 intents = discord.Intents.default()
@@ -51,15 +52,6 @@ def admin(ctx):
 		285311305253126145 # Josh
 		]
 	return True if ctx.author.id in admins else False
-
-def getFile():
-	result = []
-	for root, dirs, files in os.walk(os. getcwd()):
-		for file in files:
-			if file in ['run.bat', 'run.sh']:
-				result.append(file)
-	return result[0] if len(result) == 1 else None
-
 
 config = read('config.yaml')
 
@@ -127,15 +119,13 @@ async def ping(ctx):
 @bot.command()
 async def reload(ctx):
 	if admin(ctx):
-		file = getFile()
-		if file:
-			await ctx.send('Reloading...')
-			await ctx.send(file)
-			if file.endswith('.sh'):
-				await ctx.send('test')
-				os.system('./'+file)
-			else:
-				os.system(file)
+		
+		await ctx.send('Reloading...')
+		if platform.system() == 'Windows' and os.path.isfile('run.bat'):
+			os.system('run.bat')
+			quit()
+		elif os.path.isfile('run.sh'):
+			os.system('./run.sh')
 			quit()
 		else:
 			await ctx.send('An error has occured')
