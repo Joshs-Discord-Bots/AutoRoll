@@ -11,6 +11,7 @@ from time import sleep
 
 if not os.path.isfile('config.json'):
 	def_config = {
+		'token': '',
 		'intents': {'messages': False, 'members': False, 'guilds': False},
 		'prefix': '-',
 		'admins': []
@@ -28,17 +29,13 @@ intents.guilds = config['intents']['guilds']
 
 prefix = config['prefix']
 
-
-
-
 activity = discord.Game(name=f"{prefix}help")
 bot = commands.Bot(command_prefix = prefix, intents=intents, activity=activity, status=discord.Status.online, case_insensitive=True)
 bot.remove_command('help')
 
-with open('token.txt') as f:
-    bot.token = f.read()
-
+bot.token = config['token']
 bot.admins = config['admins']
+
 
 #endregion
 
