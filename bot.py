@@ -6,25 +6,39 @@ from discord.ext import commands
 import os
 import platform
 import yaml
+import json
+
+if not os.path.isfile('config.json'):
+	def_config = {
+		'intents': {'messages': False, 'members': False, 'guilds': False},
+		'prefix': '-',
+		'admins': []
+	}
+	with open('config.json', 'w') as outfile:
+		json.dump(def_config, outfile)
+
+with open('config.json') as json_file:
+    config = json.load(json_file)
+
 
 intents = discord.Intents.default()
-intents.messages = True
-intents.members = True
-intents.guilds = True
+intents.messages = config['intents']['messages']
+intents.members = config['intents']['members']
+intents.guilds = config['intents']['guilds']
 
-prefix = '$'
+prefix = config['prefix']
+
+
+
 
 activity = discord.Game(name=f"{prefix}help")
 bot = commands.Bot(command_prefix = prefix, intents=intents, activity=activity, status=discord.Status.online, case_insensitive=True)
 bot.remove_command('help')
 
-bot.token = 'TOKEN'
 with open('token.txt') as f:
     bot.token = f.read()
 
-bot.admins = [
-	285311305253126145 # Josh
-	]
+bot.admins = config['admins']
 
 #endregion
 
@@ -50,10 +64,7 @@ def write(data, writeFilename):
 	return
 
 def admin(ctx):
-	admins = [
-		285311305253126145 # Josh
-		]
-	return True if ctx.author.id in admins else False
+	return True if ctx.author.id in bot.admins else False
 
 config = read('config.yaml')
 
