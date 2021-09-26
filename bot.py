@@ -5,9 +5,7 @@ import discord
 from discord.ext import commands
 import os
 import platform
-import yaml
 import json
-from time import sleep
 
 if not os.path.isfile('config.json'):
 	def_config = {
@@ -48,23 +46,8 @@ def clear():
 		# system('clear')
 		pass
 
-def read(readFilename):
-	try:
-		with open(readFilename) as f:
-			return yaml.load(f, Loader=yaml.FullLoader)
-	except FileNotFoundError:
-		return None
-
-def write(data, writeFilename):
-	with open(writeFilename, 'w') as f:
-		data = yaml.dump(data, f)
-	return
-
 def admin(ctx):
 	return True if ctx.author.id in bot.admins else False
-
-config = read('config.yaml')
-
 #endregion
 
 #region ----------------------------------------------------- EVENTS -------------------------------------------------
