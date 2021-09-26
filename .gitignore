@@ -3,3 +3,5 @@ __pycache__
 *.lnk
 *.bat
 *.sh
+!run.bat
+!run.sh
