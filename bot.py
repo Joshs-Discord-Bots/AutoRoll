@@ -133,7 +133,7 @@ async def ping(ctx):
 async def reload(ctx):
 	if admin(ctx):
 		msg = await ctx.send('Reloading...')
-		sleep(1000)
+		sleep(1)
 		await ctx.delete(msg)
 		if platform.system() == 'Windows' and os.path.isfile('run.bat'):
 			os.system('run.bat')
