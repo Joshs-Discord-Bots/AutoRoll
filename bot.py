@@ -16,11 +16,10 @@ if not os.path.isfile('config.json'):
 		'admins': []
 	}
 	with open('config.json', 'w') as outfile:
-		json.dump(def_config, outfile)
+		json.dump(def_config, outfile, indent=4)
 
 with open('config.json') as json_file:
     config = json.load(json_file)
-
 
 intents = discord.Intents.default()
 intents.messages = config['intents']['messages']
