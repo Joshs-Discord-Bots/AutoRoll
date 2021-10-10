@@ -7,18 +7,29 @@ import os
 import platform
 import json
 
+def read(readFilename):
+	try:
+		with open(readFilename) as json_file:
+			return json.load(json_file)
+	except FileNotFoundError:
+		return None
+
+def write(data, writeFilename):
+	with open(writeFilename, 'w') as outfile:
+		json.dump(data, outfile, indent=4)
+	return
+
 if not os.path.isfile('config.json'):
 	def_config = {
-		'token': '',
+		'token': 'TOKEN',
+		'name': 'BOT NAME',
 		'intents': {'messages': False, 'members': False, 'guilds': False},
 		'prefix': '-',
 		'admins': []
 	}
-	with open('config.json', 'w') as outfile:
-		json.dump(def_config, outfile, indent=4)
+	write(def_config, 'config.json')
 
-with open('config.json') as json_file:
-    config = json.load(json_file)
+config = read('config.json')
 
 intents = discord.Intents.default()
 intents.messages = config['intents']['messages']
