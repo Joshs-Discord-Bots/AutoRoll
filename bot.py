@@ -121,6 +121,12 @@ async def ping(ctx):
 	await ctx.send('Pong!')
 
 @bot.command()
+async def test(ctx):
+	if admin(ctx):
+		await ctx.author.send('Test')
+
+
+@bot.command()
 async def reload(ctx):
 	if admin(ctx):
 		await ctx.send('Reloading...')
