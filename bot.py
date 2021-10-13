@@ -79,6 +79,8 @@ async def on_member_join(member):
 		print('"' + member.name + '" has been silenced')
 	else:
 		role = discord.utils.get(member.guild.roles, name='BOTS')
+		await member.add_roles(role) # BOTS
+		print('"' + member.name + '" has been given the BOTS role')
 
 @bot.event
 async def on_raw_message_edit(payload):
