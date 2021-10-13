@@ -135,7 +135,7 @@ async def test(ctx):
 async def support(ctx):
 	embed = discord.Embed ( # Message
 		title='Bot Support Contact Info',
-		description='Hey! Problem with the bot? Want your own bot commissioned?\nSend me a friend request!\nJoshalot#1023',
+		description='Hey! Problem with the bot? Want your own bot commissioned?\nSend me a friend request!\n\nJoshalot#1023',
 		colour=discord.Colour.orange()
 	)
 	await ctx.author.send(embed=embed)
