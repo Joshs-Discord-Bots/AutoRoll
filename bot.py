@@ -131,6 +131,14 @@ async def test(ctx):
 	if admin(ctx):
 		await ctx.author.send('Test')
 
+@bot.command()
+async def support(ctx):
+	embed = discord.Embed ( # Message
+		title='Bot Support Contact Info',
+		description='Hey! Problem with the bot? Want your own bot commissioned?\nSend me a friend request!\nJoshalot#1023',
+		colour=discord.Colour.orange()
+	)
+	await ctx.author.send(embed=embed)
 
 @bot.command()
 async def reload(ctx):
@@ -149,7 +157,8 @@ async def reload(ctx):
 
 @bot.command()
 async def help(ctx):
-	pass
+	support(ctx)
+	return
 	embed = discord.Embed ( # Message
 		title='Help Commands',
 		description=f'Listing commands...',
