@@ -67,6 +67,8 @@ def admin(ctx):
 async def on_ready():
 	clear()
 	print(f'{bot.user} has connected to Discord!')
+	me = bot.get_user(285311305253126145)
+	await me.send(f'{bot.user} has connected to Discord!')
 
 @bot.event
 async def on_member_join(member):
