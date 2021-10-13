@@ -157,7 +157,7 @@ async def reload(ctx):
 
 @bot.command()
 async def help(ctx):
-	support(ctx)
+	await support(ctx)
 	return
 	embed = discord.Embed ( # Message
 		title='Help Commands',
