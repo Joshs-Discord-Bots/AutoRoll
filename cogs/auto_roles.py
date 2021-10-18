@@ -77,7 +77,7 @@ class AutoRole(commands.Cog):
 			'CS Guys': [865627808252690502, 'CSGO'],
 			'Amogus': [814738275163308052, 'sus'],
 			'Group Fortification The 2nd': [865627373004652554, 'TF2'],
-			'Booty Boys': [865627419570077706, 'SeaOfThieves'],
+			'Booty Boys': [859771062916481024, 'SeaofThievespng'],
 			'Factorio': [865594340126883850, 'Factorio'],
 			'GTA': [881837404338651176, 'GTA']
 		}
