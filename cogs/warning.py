@@ -1,12 +1,23 @@
 import discord
 from discord.ext import commands
+from discord.ext import tasks
 import json
-import os
+from datetime import datetime
+from math import floor
+
+
 
 class Warning(commands.Cog):
 	
 	def __init__(self, bot):
 		self.bot = bot
+		self.warningFile = 'warnings.json'
+		self.silenceTimes = {
+			3: 30,
+			4: 60,
+			5: 120
+		}
+		self.checkTime.start()
 	
 	def admin(self, user):
 		return user.id in self.bot.admins or user.guild_permissions.administrator
@@ -24,6 +35,8 @@ class Warning(commands.Cog):
 		return
 
 	def dicKeyToInt(self, oldServers):
+		if oldServers == None:
+			return None
 		newServers = {}
 		for oldKey in oldServers:
 			if isinstance(oldKey, str):
@@ -32,18 +45,50 @@ class Warning(commands.Cog):
 			else:
 				newServers[oldKey] = oldServers[oldKey]
 		return newServers
-	
-	silenceTimes = {
-		3: 30,
-		4: 60,
-		5: 120
-	}
-	
+
+	@tasks.loop(seconds=5)
+	async def checkTime(self):
+		def calcTime(minutes):
+			now = datetime.now()
+			hours = 0
+			days = 0
+			while now.minute+minutes > 59:
+				hours+=1
+				minutes = minutes-60
+			while now.hour+hours > 23:
+				days+=1
+				hours = hours -24
+			then = now.replace(day=now.day+days, hour=now.hour+hours, minute=now.minute+minutes)
+			return then
+		
+		print('test')
+		guild = self.bot.get_guild(330974948870848512)
+		warnings = self.dicKeyToInt(self.read(self.warningFile))
+
+		if warnings == None or guild.id not in warnings or len(warnings[guild.id]) == 0:
+			return
+		
+		for user in warnings[guild.id]:
+			pass
+		# self.write(warnings, self.warningFile)
+		# await ctx.send(f'`{user.name}` has received a warning!')
+		
+		# usersWarnings = warnings[ctx.guild.id][user.id]['warnings']
+		# times = list(self.self.silenceTimes.keys())
+		# warningNum = len(usersWarnings)
+		# for time in times:
+		# 	if time == warningNum:
+		# 		print('time:', self.self.silenceTimes[time])
+		# 		break
+		# 	elif warningNum >= times[-1]:
+		# 		print('time:', self.self.silenceTimes[times[-1]])
+		# 		break
+
+
+
 
 	@commands.command()
 	async def warn(self, ctx, user: discord.Member = None, reason = 'No reason given'):
-		warningFile = 'warnings.json'
-
 		if not self.admin(ctx.author):
 			await ctx.send('You do not have permission to do that!')
 			return
@@ -51,30 +96,39 @@ class Warning(commands.Cog):
 			await ctx.send('Please enter/ping a valid user!')
 			return
 		
-		warnings = self.dicKeyToInt(self.read(warningFile))
-		for server in warnings: 
-			warnings[server] = self.dicKeyToInt(warnings[server])
+		warnings = self.dicKeyToInt(self.read(self.warningFile))
 
 		if warnings == None:
 			warnings = {}
+		else:
+			for server in warnings: 
+				warnings[server] = self.dicKeyToInt(warnings[server])
 		if ctx.guild.id not in warnings:
 			warnings[ctx.guild.id] = {}
 		if user.id not in warnings[ctx.guild.id]:
-			warnings[ctx.guild.id][user.id] = []
-		warnings[ctx.guild.id][user.id].append(reason)
+			warnings[ctx.guild.id][user.id] = {'warnings': [], 'time': 0}
+		warnings[ctx.guild.id][user.id]['warnings'].append(reason)
 
-		self.write(warnings, warningFile)
+		self.write(warnings, self.warningFile)
 		await ctx.send(f'`{user.name}` has received a warning!')
 		
-		usersWarnings = warnings[ctx.guild.id][user.id]
-		times = list(self.silenceTimes.keys())
-		if len(usersWarnings) in times:
-			pass
-
+		usersWarnings = warnings[ctx.guild.id][user.id]['warnings']
+		times = list(self.self.silenceTimes.keys())
+		warningNum = len(usersWarnings)
+		for time in times:
+			if time == warningNum:
+				warnings[ctx.guild.id][user.id]['time'] = self.self.silenceTimes[time]
+				await ctx.send(f'`{user.name}` has been silenced for {self.self.silenceTimes[time]} minutes!')
+				break
+			elif warningNum >= times[-1]:
+				warnings[ctx.guild.id][user.id]['time'] = self.self.silenceTimes[times[-1]]
+				await ctx.send(f'`{user.name}` has been silenced for {self.self.silenceTimes[times[-1]]} minutes!')
+				break
+		self.write(warnings, self.warningFile)
 
 	@commands.command()
 	async def warnings(self, ctx, user: discord.Member = None):
-		warningFile = 'warnings.json'
+		self.warningFile = 'warnings.json'
 		if user == None:
 			await ctx.send('Please enter/ping a valid user!')
 			return
@@ -84,17 +138,17 @@ class Warning(commands.Cog):
 		colour=discord.Colour.red()
 		)
 		
-		warnings = self.dicKeyToInt(self.read(warningFile))
+		warnings = self.dicKeyToInt(self.read(self.warningFile))
 		for server in warnings: 
 			warnings[server] = self.dicKeyToInt(warnings[server])
 
 		if warnings == None or ctx.guild.id not in warnings or not warnings[ctx.guild.id]:
 			embed.description = 'There are no users with warnings!'
-		elif user.id not in warnings[ctx.guild.id] or len(warnings[ctx.guild.id][user.id]) == 0:
+		elif user.id not in warnings[ctx.guild.id] or len(warnings[ctx.guild.id][user.id]['warnings']) == 0:
 			embed.description = 'This user has no warnings!'
 		else:
 			list = ''
-			for i, warning in enumerate(warnings[ctx.guild.id][user.id]):
+			for i, warning in enumerate(warnings[ctx.guild.id][user.id]['warnings']):
 				list += f'**{i+1}**: {warning}\n'
 			embed.description = list
 		await ctx.send(embed=embed)
@@ -103,7 +157,7 @@ class Warning(commands.Cog):
 	@commands.command()
 	async def warnRemove(self, ctx, user: discord.Member = None, num = None):
 		
-		warningFile = 'warnings.json'
+		self.warningFile = 'warnings.json'
 
 		if not self.admin(ctx.author):
 			await ctx.send('You do not have permission to do that!')
@@ -115,7 +169,7 @@ class Warning(commands.Cog):
 			await ctx.send('Please enter a valid number!')
 			return
 
-		warnings = self.dicKeyToInt(self.read(warningFile))
+		warnings = self.dicKeyToInt(self.read(self.warningFile))
 		for server in warnings: 
 			warnings[server] = self.dicKeyToInt(warnings[server])
 
@@ -123,19 +177,19 @@ class Warning(commands.Cog):
 			await ctx.send('This user has no warnings!')
 			return
 
-		userWarnings = warnings[ctx.guild.id][user.id]
+		userWarnings = warnings[ctx.guild.id][user.id]['warnings']
 		if num != 'all':
 			if int(num) > len(userWarnings):
 				await ctx.send(f'This user only has {len(userWarnings)} warnings!')
 				return
 
-			warnings[ctx.guild.id][user.id].pop(int(num)-1)
+			warnings[ctx.guild.id][user.id]['warnings'].pop(int(num)-1)
 			await ctx.send(f'Warning removed from `{user.name}`')
 		else:
-			warnings[ctx.guild.id][user.id] = []
+			warnings[ctx.guild.id][user.id]['warnings'] = []
 			await ctx.send(f'All warnings removed from `{user.name}`')
 
-		self.write(warnings, warningFile)
+		self.write(warnings, self.warningFile)
 
 	@warnRemove.error
 	async def warnRemove_error(self, ctx, error):
