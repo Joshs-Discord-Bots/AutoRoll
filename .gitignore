@@ -6,3 +6,4 @@ __pycache__
 *.json
 !run.bat
 !run.sh
+*.pyc
