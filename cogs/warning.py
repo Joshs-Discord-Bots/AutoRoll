@@ -3,9 +3,7 @@ from discord.ext import commands
 from discord.ext import tasks
 import json
 from datetime import datetime
-from math import floor
-
-
+from os import system
 
 class Warning(commands.Cog):
 	
@@ -46,45 +44,38 @@ class Warning(commands.Cog):
 				newServers[oldKey] = oldServers[oldKey]
 		return newServers
 
+	def calcTime(self, minutes):
+		now = datetime.now()
+		hours = 0
+		days = 0
+		while now.minute+minutes > 59:
+			hours+=1
+			minutes = minutes-60
+		while now.hour+hours > 23:
+			days+=1
+			hours = hours -24
+		then = now.replace(day=now.day+days, hour=now.hour+hours, minute=now.minute+minutes)
+		return then
+
 	@tasks.loop(seconds=5)
 	async def checkTime(self):
-		def calcTime(minutes):
-			now = datetime.now()
-			hours = 0
-			days = 0
-			while now.minute+minutes > 59:
-				hours+=1
-				minutes = minutes-60
-			while now.hour+hours > 23:
-				days+=1
-				hours = hours -24
-			then = now.replace(day=now.day+days, hour=now.hour+hours, minute=now.minute+minutes)
-			return then
-		
-		print('test')
-		guild = self.bot.get_guild(330974948870848512)
+		# print('check')
 		warnings = self.dicKeyToInt(self.read(self.warningFile))
-
-		if warnings == None or guild.id not in warnings or len(warnings[guild.id]) == 0:
+		if warnings == None:
 			return
 		
-		for user in warnings[guild.id]:
-			pass
-		# self.write(warnings, self.warningFile)
-		# await ctx.send(f'`{user.name}` has received a warning!')
-		
-		# usersWarnings = warnings[ctx.guild.id][user.id]['warnings']
-		# times = list(self.self.silenceTimes.keys())
-		# warningNum = len(usersWarnings)
-		# for time in times:
-		# 	if time == warningNum:
-		# 		print('time:', self.self.silenceTimes[time])
-		# 		break
-		# 	elif warningNum >= times[-1]:
-		# 		print('time:', self.self.silenceTimes[times[-1]])
-		# 		break
-
-
+		for guildID in warnings:
+			for userID in warnings[guildID]:
+				then = warnings[guildID][userID]['time']
+				if then != 0:
+					then = datetime.fromisoformat(then)
+					if datetime.now() > then:
+						warnings[guildID][userID]['time'] = 0
+						self.write(warnings, self.warningFile)
+						guild = await self.bot.fetch_guild(guildID)
+						user = await guild.fetch_member(userID)
+						role = discord.utils.get(guild.roles, name='Silenced')
+						await user.remove_roles(role)
 
 
 	@commands.command()
@@ -92,7 +83,7 @@ class Warning(commands.Cog):
 		if not self.admin(ctx.author):
 			await ctx.send('You do not have permission to do that!')
 			return
-		if user == None:
+		if user.bot:
 			await ctx.send('Please enter/ping a valid user!')
 			return
 		
@@ -113,16 +104,21 @@ class Warning(commands.Cog):
 		await ctx.send(f'`{user.name}` has received a warning!')
 		
 		usersWarnings = warnings[ctx.guild.id][user.id]['warnings']
-		times = list(self.self.silenceTimes.keys())
+		times = list(self.silenceTimes.keys())
 		warningNum = len(usersWarnings)
+		role = discord.utils.get(user.guild.roles, name='Silenced')
 		for time in times:
 			if time == warningNum:
-				warnings[ctx.guild.id][user.id]['time'] = self.self.silenceTimes[time]
-				await ctx.send(f'`{user.name}` has been silenced for {self.self.silenceTimes[time]} minutes!')
+				warnings[ctx.guild.id][user.id]['time'] = str(self.calcTime(self.silenceTimes[time]))
+				await user.add_roles(role) # Silence
+				await ctx.send(f'This user has been silenced for `{self.silenceTimes[time]}` minutes!')
+				await user.send(f'*You have been silenced.*\n*Reason:* {usersWarnings[-1]}')
 				break
 			elif warningNum >= times[-1]:
-				warnings[ctx.guild.id][user.id]['time'] = self.self.silenceTimes[times[-1]]
-				await ctx.send(f'`{user.name}` has been silenced for {self.self.silenceTimes[times[-1]]} minutes!')
+				warnings[ctx.guild.id][user.id]['time'] = str(self.calcTime(self.silenceTimes[times[-1]]))
+				await user.add_roles(role) # Silence
+				await ctx.send(f'This user has been silenced for `{self.silenceTimes[times[-1]]}` minutes!')
+				await user.send(f'*You have been silenced.*\n*Reason:* {usersWarnings[-1]}')
 				break
 		self.write(warnings, self.warningFile)
 
@@ -130,8 +126,7 @@ class Warning(commands.Cog):
 	async def warnings(self, ctx, user: discord.Member = None):
 		self.warningFile = 'warnings.json'
 		if user == None:
-			await ctx.send('Please enter/ping a valid user!')
-			return
+			user = ctx.author
 		
 		embed = discord.Embed ( # Message
 		title=f'Warning List: {user.name}',
@@ -191,10 +186,5 @@ class Warning(commands.Cog):
 
 		self.write(warnings, self.warningFile)
 
-	@warnRemove.error
-	async def warnRemove_error(self, ctx, error):
-		if isinstance(error, commands.MemberNotFound):
-			await ctx.send('Please input a valid user!')
-	
 def setup(bot):
 	bot.add_cog(Warning(bot))
