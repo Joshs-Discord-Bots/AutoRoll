@@ -86,6 +86,15 @@ async def on_member_join(member):
 async def on_raw_message_edit(payload):
 	pass
 
+
+
+@bot.event
+async def on_command_error(ctx, error):
+	if isinstance(error, commands.MemberNotFound):
+		await ctx.send('That user does not exist!')
+	elif isinstance(error, commands.MissingPermissions):
+		await ctx.send('You are not allowed to do that!')
+
 #endregion
 
 #region ----------------------------------------------------- COMMANDS -------------------------------------------------
