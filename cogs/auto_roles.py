@@ -9,7 +9,7 @@ class AutoRole(commands.Cog):
 	#region ---------------------------------------------------- FUNCTIONS -----------------------------------------------
 
 	def admin(self, ctx):
-		return True if ctx.author.id in bot.admins else False
+		return True if ctx.author.id in self.admins else False
 
 	def getGuild(self, ctx):
 		guild = discord.utils.find(lambda g : g.id == ctx.guild_id, self.bot.guilds)
@@ -77,7 +77,7 @@ class AutoRole(commands.Cog):
 			'CS Guys': [865627808252690502, 'CSGO'],
 			'Amogus': [814738275163308052, 'sus'],
 			'Group Fortification The 2nd': [865627373004652554, 'TF2'],
-			'Booty Boys': [865627419570077706, 'SeaOfThieves'],
+			'Booty Boys': [859771062916481024, 'SeaofThievespng'],
 			'Factorio': [865594340126883850, 'Factorio'],
 			'GTA': [881837404338651176, 'GTA']
 		}
@@ -147,8 +147,8 @@ class AutoRole(commands.Cog):
 
 	@commands.command()
 	async def gamesSetup(self, ctx):													# gamesSetup command
-		if admin(ctx): # if posted by me
-			channel = self.bot.get_channel(autoRoleChannelID)
+		if self.admin(ctx): # if posted by me
+			channel = self.bot.get_channel(self.autoRoleChannelID)
 			commandMessage = await channel.fetch_message(channel.last_message_id)
 			await commandMessage.delete()
 			
@@ -162,7 +162,7 @@ class AutoRole(commands.Cog):
 			# embed.set_footer(text='Unique')
 			msg = await ctx.send(embed=embed)
 
-			channel = self.bot.get_channel(autoRoleChannelID)
+			channel = self.bot.get_channel(self.autoRoleChannelID)
 			message = await channel.fetch_message(channel.last_message_id)
 
 			for role in self.messageList[865635642071318539]: # Loop through emojis
@@ -175,8 +175,8 @@ class AutoRole(commands.Cog):
 
 	@commands.command()
 	async def colourSetup(self, ctx):													# coloursSetup command
-		if admin(ctx): # if posted by me
-			channel = self.bot.get_channel(autoRoleChannelID)
+		if self.admin(ctx): # if posted by me
+			channel = self.bot.get_channel(self.autoRoleChannelID)
 			commandMessage = await channel.fetch_message(channel.last_message_id)
 			await commandMessage.delete()
 			
@@ -190,7 +190,7 @@ class AutoRole(commands.Cog):
 			# embed.set_footer(text='Unique')
 			msg = await ctx.send(embed=embed)
 
-			channel = self.bot.get_channel(autoRoleChannelID)
+			channel = self.bot.get_channel(self.autoRoleChannelID)
 			message = await channel.fetch_message(channel.last_message_id)
 
 			for role in self.messageList[865634630912704512]: # Loop through emojis

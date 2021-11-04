@@ -187,7 +187,6 @@ for filename in os.listdir('./cogs'):
 
 #endregion
 
-
 clear()
 print('Booting Up...')
 
