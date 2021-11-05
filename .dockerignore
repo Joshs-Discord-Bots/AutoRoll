@@ -1,9 +1,0 @@
-__pycache__
-*.txt
-*.lnk
-*.bat
-*.sh
-*.json
-!run.bat
-!run.sh
-*.pyc
