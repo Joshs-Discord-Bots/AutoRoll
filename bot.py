@@ -141,7 +141,7 @@ async def ping(ctx):
 async def test(ctx):
 	if admin(ctx):
 		await ctx.author.send('Test')
-		await ctx.author.send('Test2')
+		await ctx.author.send(socket.gethostbyname(socket.gethostname()))
 
 @bot.command()
 async def support(ctx):
