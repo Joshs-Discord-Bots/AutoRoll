@@ -7,8 +7,6 @@ import os
 import platform
 import json
 
-import socket
-
 def read(readFilename):
 	try:
 		with open(readFilename) as json_file:
@@ -141,7 +139,6 @@ async def ping(ctx):
 async def test(ctx):
 	if admin(ctx):
 		await ctx.author.send('Test')
-		await ctx.author.send(socket.gethostbyname(socket.gethostname()))
 
 @bot.command()
 async def support(ctx):
