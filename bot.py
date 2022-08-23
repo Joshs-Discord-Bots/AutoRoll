@@ -1,5 +1,6 @@
 #region ------------------------------------------------------ SETUP -------------------------------------------------
 
+from code import interact
 from os import system
 import nextcord
 from nextcord.ext import commands
@@ -23,27 +24,28 @@ if not os.path.isfile('config.json'):
 	def_config = {
 		'token': 'TOKEN',
 		'name': 'BOT NAME',
-		# 'intents': {'messages': False, 'members': False, 'guilds': False},
-		# 'prefix': '-',
+		'intents': {'messages': False, 'members': False, 'guilds': False},
+		'prefix': '-',
 		'admins': []
 	}
 	write(def_config, 'config.json')
 
 config = read('config.json')
 
-# intents = discord.Intents.default()
-# intents.messages = config['intents']['messages']
-# intents.members = config['intents']['members']
-# intents.guilds = config['intents']['guilds']
+intents = nextcord.Intents.default()
+intents.message_content = config['intents']['messages']
+intents.members = config['intents']['members']
+intents.guilds = config['intents']['guilds']
 
-# prefix = config['prefix']
+prefix = config['prefix']
 
 # activity = discord.Game(name=f"{prefix}help")
 # bot = commands.Bot(command_prefix = prefix, intents=intents, activity=activity, status=discord.Status.online, case_insensitive=True)
 # bot.remove_command('help')
 
 
-bot = nextcord.Client()
+# bot = nextcord.Client()
+bot = commands.Bot(command_prefix=prefix, intents=intents)
 bot.token = config['token']
 bot.admins = config['admins']
 
@@ -58,8 +60,8 @@ def clear():
 	else:
 		system('clear')
 
-def admin(ctx):
-	return True if ctx.author.id in bot.admins else False
+def admin(member):
+	return True if member.id in bot.admins else False
 #endregion
 
 #region ----------------------------------------------------- EVENTS -------------------------------------------------
@@ -68,20 +70,23 @@ def admin(ctx):
 async def on_ready():
 	clear()
 	print(f'{bot.user} has connected to Discord!')
-	# me = bot.get_user(285311305253126145)
-	# await me.send(f'{bot.user} has connected to Discord!')
+
+@bot.event
+async def on_message(message):
+    pass
+    # print(message.content)
 
 @bot.event
 async def on_member_join(member):
 	print('"' + member.name + '" joined')
-	# if not member.bot:
-	# 	role = discord.utils.get(member.guild.roles, name='Silenced')
-	# 	await member.add_roles(role) # Silence
-	# 	print('"' + member.name + '" has been silenced')
-	# else:
-	# 	role = discord.utils.get(member.guild.roles, name='BOTS')
-	# 	await member.add_roles(role) # BOTS
-	# 	print('"' + member.name + '" has been given the BOTS role')
+	if not member.bot:
+		role = member.guild.get_role(870593338468872192)
+		await member.add_roles(role) # Silence
+		print('"' + member.name + '" has been silenced')
+	else:
+		role = member.guild.get_role(675635324071706654)
+		await member.add_roles(role) # BOTS
+		print('"' + member.name + '" has been given the BOTS role')
 
 
 
@@ -96,13 +101,19 @@ async def on_member_join(member):
 
 #region ----------------------------------------------------- COMMANDS -------------------------------------------------
 
-# @bot.command()
-# async def ping(ctx):
-# 	await ctx.send('Pong!')
+@bot.slash_command(description='Will return "Pong" if the bot is online.')
+async def ping(interaction : nextcord.Interaction):
+	await interaction.send('Pong!')
 
-# @bot.command()
-# async def test(ctx):
-#     pass
+@bot.slash_command()
+async def test(interaction : nextcord.Interaction, option: str):
+    if not admin(interaction.user):
+        await interaction.send('You do not have permission to use this command!')
+        return
+    
+    await interaction.send('Authorised')
+
+
 
 # @bot.command()
 # async def support(ctx):
@@ -115,8 +126,7 @@ async def on_member_join(member):
 
 @bot.slash_command()
 async def reload(interaction : nextcord.Interaction):
-	# if admin(ctx):
-	if True:
+	if admin(interaction.user):
 		await interaction.send('Reloading...')
 		if platform.system() == 'Windows' and os.path.isfile('run.bat'):
 			os.system('run.bat')
