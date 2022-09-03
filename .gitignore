@@ -3,3 +3,5 @@ __pycache__
 # /venv
 *.json
 *.pyc
+*.txt
+cogs/resources/meme.jpg

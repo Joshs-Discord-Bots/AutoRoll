@@ -19,17 +19,30 @@ def write(data, writeFilename):
         json.dump(data, outfile, indent=4)
     return
 
-if not os.path.isfile('config.json'):
-    def_config = {
-        'token': 'TOKEN',
-        'name': 'BOT NAME',
-        'intents': {'messages': False, 'members': False, 'guilds': False},
-        'prefix': '-',
-        'admins': []
-    }
-    write(def_config, 'config.json')
 
-config = read('config.json')
+if 'TOKEN' in os.environ: # If in docker container
+    config = {
+        "token": os.environ['TOKEN'],
+        "intents": {
+            "messages": True,
+            "members": True,
+            "guilds": True
+        },
+        "prefix": "$",
+        "admins": [285311305253126145]
+    }
+else:
+    if not os.path.isfile('config.json'):
+        def_config = {
+            'token': 'TOKEN',
+            'intents': {'messages': False, 'members': False, 'guilds': False},
+            'prefix': '-',
+            'admins': []
+        }
+        write(def_config, 'config.json')
+
+    config = read('config.json')
+
 
 intents = nextcord.Intents.default()
 intents.message_content = config['intents']['messages']
