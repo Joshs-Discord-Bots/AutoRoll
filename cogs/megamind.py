@@ -26,7 +26,6 @@ class Megamind(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    # @nextcord.slash_command(description='Creates a "No __?" meme.', guild_ids=[330974948870848512])
     @nextcord.slash_command(description='Creates a "No __?" meme.')
     async def no(self, interaction: nextcord.Interaction, text: str):
         generate(text)
