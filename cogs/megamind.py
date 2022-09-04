@@ -11,7 +11,7 @@ def generate(text, output='cogs/resources/meme.jpg'):
     text_color = (255, 255, 255)
     stroke_color = (0, 0, 0)
     stroke_width = font_size//15
-    font = ImageFont.truetype("impact.ttf", font_size, encoding="unic")
+    font = ImageFont.truetype(font="impact.ttf", size=font_size, encoding="unic")
     # --------------------------------------------------
     file = Image.open('cogs\\resources\\base.jpg') # open image
     image = ImageDraw.Draw(file) # create a layer to draw text on

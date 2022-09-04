@@ -1,7 +1,8 @@
 __pycache__
-/OLD
-# /venv
 *.json
 *.pyc
 *.txt
+
+/OLD
 cogs/resources/meme.jpg
+/cogs/resources/meme.jpg
