@@ -1,17 +1,14 @@
 #region ------------------------------------------------------ SETUP -------------------------------------------------
 
-from os import system
-import nextcord
+import nextcord, os, platform, json
 from nextcord.ext import commands
-import os
-import platform
-import json
 
 def read(readFilename):
     try:
         with open(readFilename) as json_file:
             return json.load(json_file)
     except FileNotFoundError:
+        print('File not found!')
         return None
 
 def write(data, writeFilename):
@@ -61,15 +58,18 @@ client = commands.Bot(command_prefix=prefix, intents=intents)
 client.token = config['token']
 client.admins = config['admins']
 
+client.read = read
+client.write = write
 #endregion
 
 #region ------------------------------------------------- CUSTOM FUNCTIONS -------------------------------------------
 
 def clear():
+    return
     if platform.system() == 'Windows':
-        system('cls')
+        os.system('cls')
     else:
-        system('clear')
+        os.system('clear')
 
 def admin(member):
     return True if member.id in client.admins else False
@@ -114,29 +114,22 @@ async def on_member_join(member):
 
 @client.slash_command(description='Will return "Pong" if the bot is online.')
 async def ping(interaction : nextcord.Interaction):
-    await interaction.send('Pong!')
+    await interaction.send(f'🏓 **Pong!** ({round(client.latency*1000)}ms)')
 
-
-
-@client.slash_command(description='For debugging purposes)')
-@commands.has_permissions(administrator=True)
-async def test(interaction : nextcord.Interaction, option: str):
-    # if not admin(interaction.user):
-    #     await interaction.send('You do not have permission to use this command!')
-    #     return
-    
-    await interaction.send('Authorised')
 
 
 @client.slash_command(description='Help Command')
 async def help(interaction : nextcord.Interaction):
-    await support(interaction)
-    return
+    # await support(interaction)
+    # return
+    
     embed = nextcord.Embed(
         title='Help Commands',
         description=f'Listing commands...',
         colour=nextcord.Colour.blue())
-    embed.add_field(name='/ping', value='Will return "Pong" if the bot is online.', inline=False)
+    embed.add_field(name='/ping', value='Will return "Pong" if the bot is online.', inline=False),
+    embed.add_field(name='/roles <add/remove/list>', value='Commands relating to roles.', inline=False),
+    embed.add_field(name='/no <keyword>', value='Creates a custom "No Bitches?" meme.', inline=False),
     await interaction.send(embed=embed)
 
 
@@ -183,14 +176,13 @@ async def reload(interaction : nextcord.Interaction):
 
 #region ----------------------------------------------------- COGS -------------------------------------------------
 
-blacklist = ['template.py', 'wordle.py', 'music.py']
+whitelist = ['autorole.py', 'megamind.py', 'test.py']
 cogs = [] # So we can reload them
 for filename in os.listdir('./cogs'):
-    if filename.endswith('.py') and filename not in blacklist:
+    if filename.endswith('.py') and filename in whitelist:
         cog = f'cogs.{filename[:-3]}'
         client.load_extension(cog)
         cogs.append(cog)
-
 
 #endregion
 clear()
