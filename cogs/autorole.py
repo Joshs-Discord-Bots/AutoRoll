@@ -1,6 +1,5 @@
 import nextcord
 from nextcord.ext import commands
-from typing import Optional
 
 class CustomRoles():
     def __init__(self, client):

@@ -7,12 +7,13 @@ class GameDropdown(nextcord.ui.Select):
         options = [
             nextcord.SelectOption(label='Option 1', description='Description', emoji='\ud83d\udfe3'),
             nextcord.SelectOption(label='Option 2', description='Description'),
-            nextcord.SelectOption(label='Option 3', description='Description'),
+            nextcord.SelectOption(label='Option 3', description='Description', value='test'),
         ]
         super().__init__(placeholder='Select an Option', min_values=0, max_values=len(options), options=options)
     
     async def callback(self, interaction: nextcord.Interaction):
         print(self.values)
+        print(self.values[0])
         await interaction.response.send_message(f'You chose {self.values[0]}')
 
 # Asign to view
@@ -33,7 +34,7 @@ class Test(commands.Cog):
         from cogs.autorole import CustomRoles
         customRoles = CustomRoles
         gameDropdown = GameDropdownView()
-        embed = nextcord.Embed(title='Game Roles', description='Pick and game you want and it will be applied as a role!' colour=nextcord.Colour.blue())
+        embed = nextcord.Embed(title='Game Roles', description='Pick and game you want and it will be applied as a role!', colour=nextcord.Colour.blue())
         await interaction.send('test', embed=embed, view=gameDropdown)
 
 
