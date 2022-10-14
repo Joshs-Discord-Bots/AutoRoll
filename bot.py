@@ -1,12 +1,16 @@
 #region ------------------------------------------------------ SETUP -------------------------------------------------
 
+from distutils.log import debug
 import nextcord, os, platform, json
 from nextcord.ext import commands
 
-def read(readFilename):
+def read(readFilename, raw=False):
     try:
-        with open(readFilename) as json_file:
-            return json.load(json_file)
+        with open(readFilename) as file:
+            if raw:
+                return file.read()
+            else:
+                return json.load(file)
     except FileNotFoundError:
         print('File not found!')
         return None
@@ -60,6 +64,8 @@ client.admins = config['admins']
 
 client.read = read
 client.write = write
+
+
 #endregion
 
 #region ------------------------------------------------- CUSTOM FUNCTIONS -------------------------------------------
@@ -176,7 +182,8 @@ async def reload(interaction : nextcord.Interaction):
 
 #region ----------------------------------------------------- COGS -------------------------------------------------
 
-whitelist = ['autorole.py', 'megamind.py', 'test.py']
+whitelist = ['roles.py', 'megamind.py']
+# whitelist = ['test.py', 'roles.py']
 cogs = [] # So we can reload them
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py') and filename in whitelist:
@@ -188,4 +195,9 @@ for filename in os.listdir('./cogs'):
 clear()
 print('Booting Up...')
 
-client.run(client.token)
+
+client.debug = False
+if client.debug:
+    client.run(read('TEST_AUTH', raw=True))
+else:
+    client.run(client.token)
