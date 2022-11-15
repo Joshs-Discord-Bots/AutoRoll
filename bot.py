@@ -1,7 +1,7 @@
 #region ------------------------------------------------------ SETUP -------------------------------------------------
 
-from distutils.log import debug
 import nextcord, os, platform, json
+from time import sleep
 from nextcord.ext import commands
 
 def read(readFilename, raw=False):
@@ -197,7 +197,14 @@ print('Booting Up...')
 
 
 client.debug = False
-if client.debug:
-    client.run(read('TEST_AUTH', raw=True))
-else:
-    client.run(client.token)
+
+while True:
+    try:
+        if client.debug:
+            client.run(read('TEST_AUTH', raw=True))
+        else:
+            client.run(client.token)
+    except:
+        print('Failed to start bot')
+        print('Retrying in 5 seconds...')
+        sleep(5)
