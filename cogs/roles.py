@@ -33,7 +33,7 @@ class GameDropdownAdd(nextcord.ui.Select):
     async def callback(self, interaction: nextcord.Interaction):
         for value in self.values:
             await interaction.user.add_roles(interaction.guild.get_role(int(value)))
-            await interaction.response.send_message('Role(s) have been given to you.\nUse `/roles remove` to remove it.**Do NOT reuse dropdown**', ephemeral=True)
+            await interaction.response.send_message('Role(s) have been given to you.\nUse `/roles remove` to remove it. **Do NOT reuse dropdown**', ephemeral=True)
 
 # Remove Games Dropdown
 class GameDropdownRemove(nextcord.ui.Select):
@@ -171,7 +171,7 @@ class AutoRole(commands.Cog):
             return
 
         custRoles = CustomRoles(self.client)
-        custRoles.roles[type][str(role.id)] = {'name': role.name, 'emoji': emoji}
+        custRoles.roles[type][str(role.id)] = emoji
         await interaction.send('Role Created!')
         custRoles.save()
         return
