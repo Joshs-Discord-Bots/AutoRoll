@@ -27,7 +27,8 @@ if 'TOKEN' in os.environ: # If in docker container
         "intents": {
             "messages": True,
             "members": True,
-            "guilds": True
+            "guilds": True,
+            "voice_states": True,
         },
         "prefix": "$",
         "admins": [285311305253126145]
@@ -36,7 +37,7 @@ else:
     if not os.path.isfile('config.json'):
         def_config = {
             'token': 'TOKEN',
-            'intents': {'messages': False, 'members': False, 'guilds': False},
+            'intents': {'messages': False, 'members': False, 'guilds': False, 'voice_states': False},
             'prefix': '-',
             'admins': []
         }
@@ -49,6 +50,7 @@ intents = nextcord.Intents.default()
 intents.message_content = config['intents']['messages']
 intents.members = config['intents']['members']
 intents.guilds = config['intents']['guilds']
+intents.voice_states = config['intents']['voice_states']
 
 prefix = config['prefix']
 
