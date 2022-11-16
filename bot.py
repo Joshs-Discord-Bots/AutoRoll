@@ -182,7 +182,7 @@ async def reload(interaction : nextcord.Interaction):
 
 #region ----------------------------------------------------- COGS -------------------------------------------------
 
-whitelist = ['roles.py', 'megamind.py']
+whitelist = ['roles.py', 'megamind.py', 'afk.py']
 # whitelist = ['test.py', 'roles.py']
 cogs = [] # So we can reload them
 for filename in os.listdir('./cogs'):
