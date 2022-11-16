@@ -16,14 +16,39 @@ class Afk(commands.Cog):
     
     afkID = 1042296356578017341
 
+    async def setAfk(self, user: nextcord.Member, ctx, method=None):
+        '''Usage: <user> <ctx> <give/take/none>'''
+        if not method: method = ['give', 'take']
+        if type(method) == 'str': method = [method]
+
+        if 'give' in method:
+            if str(user.id) not in self.afkList:
+                await user.add_roles(ctx.guild.get_role(int(self.afkID)))
+                self.afkList[str(user.id)] = int(datetime.now().timestamp())
+                self.save()
+                await ctx.send(f"**{user.name}** is now AFK.", ephemeral=True)
+        elif 'take' in method:
+            if str(user.id) in self.afkList:
+                await user.remove_roles(ctx.guild.get_role(int(self.afkID)))
+                await ctx.guild.rules_channel.send(f'Welcome back **{user.name}**! I have removed your AFK status!')
+                self.afkList.pop(str(user.id))
+                self.save()
+                return
+    
+    
     @commands.Cog.listener()
     async def on_message(self, message: nextcord.Message):
-        if str(message.author.id) in self.afkList:
-            await message.author.remove_roles(message.guild.get_role(int(self.afkID)))
-            await message.guild.rules_channel.send(f'Welcome back {message.author.mention}! I have removed your AFK status!')
-            self.afkList.pop(str(message.author.id))
-            self.save()
-            
+        await self.setAfk(message.author, message, 'take')
+    
+    @commands.Cog.listener()
+    async def on_typing(self, message: nextcord.Message, user: nextcord.Member, when: datetime):
+        await self.setAfk(user, message, 'take')
+    
+    @commands.Cog.listener()
+    async def on_voice_state_update(self, member: nextcord.Member, before: nextcord.VoiceState, after: nextcord.VoiceState):
+        await self.setAfk(member, member, 'take')
+
+
     @nextcord.slash_command(description='Set your status to afk')
     async def afk(self, interaction: nextcord.Interaction,
         user: nextcord.Member = nextcord.SlashOption(required=False)
@@ -34,18 +59,10 @@ class Afk(commands.Cog):
             else:
                 await interaction.send(f"**{user.name}** is not AFK!", ephemeral=True)
             return
+        
+        await self.setAfk(interaction.user, interaction)
 
-        if str(interaction.user.id) not in self.afkList:
-            await interaction.user.add_roles(interaction.guild.get_role(int(self.afkID)))
-            self.afkList[str(interaction.user.id)] = int(datetime.now().timestamp())
-            self.save()
-            await interaction.response.send_message(f"{interaction.user.mention} is now AFK.")
-        else:
-            await interaction.user.remove_roles(interaction.guild.get_role(int(self.afkID)))
-            self.afkList.pop(str(interaction.user.id))
-            self.save()
-            await interaction.response.send_message('You are no longer AFK', ephemeral=True)
-            return
+        
 
 def setup(client):
     client.add_cog(Afk(client))
