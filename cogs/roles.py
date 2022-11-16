@@ -171,7 +171,7 @@ class AutoRole(commands.Cog):
             return
 
         custRoles = CustomRoles(self.client)
-        custRoles.roles[type][str(role.id)] = {'name': role.name, 'emoji': emoji}
+        custRoles.roles[type][str(role.id)] = emoji
         await interaction.send('Role Created!')
         custRoles.save()
         return
