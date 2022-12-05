@@ -2,5 +2,6 @@ __pycache__
 *.json
 *.pyc
 *.txt
+*.env
 
 src/cogs/resources/meme.jpg
