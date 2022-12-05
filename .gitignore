@@ -3,7 +3,4 @@ __pycache__
 *.pyc
 *.txt
 
-/OLD
-cogs/resources/meme.jpg
-/cogs/resources/meme.jpg
-TEST_AUTH
+src/cogs/resources/meme.jpg
