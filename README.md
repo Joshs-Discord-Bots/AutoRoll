@@ -7,3 +7,11 @@
 ## About
 Little passion project of mine :)
 A discord bot that can (hopefully) do a little bit of everything!
+
+### Sample .env file
+```
+TOKEN=""
+INTENTS="MESSAGES MEMBERS GUILDS VOICE_STATES"
+PREFIX=""
+ADMINS=""
+```
