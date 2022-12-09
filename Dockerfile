@@ -1,14 +1,9 @@
 # Setup
-FROM python:3.9
-WORKDIR /autoroll-app
+FROM python:3.10-slim
+RUN mkdir /app
+WORKDIR /app
 
 # Add Files
-ADD compose.yaml .
-COPY requirements.txt .
-COPY bot.py .
-COPY cogs ./cogs
-
+COPY ./src .
+run pip install --upgrade pip
 RUN pip install -r requirements.txt
-
-# Start Application
-CMD ["python", "./bot.py"]
