@@ -5,3 +5,6 @@ __pycache__
 *.env
 
 src/cogs/resources/meme.jpg
+
+# Sync requirements
+!requirements.txt
