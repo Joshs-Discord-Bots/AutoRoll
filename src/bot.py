@@ -1,6 +1,6 @@
 #region ------------------------------------------------------ SETUP -------------------------------------------------
 
-import nextcord, os, platform, json, psutil
+import nextcord, os, platform, json, psutil, asyncio
 from time import sleep
 from nextcord.ext import commands
 
@@ -20,11 +20,7 @@ def write(data, writeFilename):
         json.dump(data, outfile, indent=4)
     return
 
-print('-'*20)
-print(os.environ)
-print('-'*20)
 if 'TOKEN' in os.environ: # If in docker container
-    print('we in a container n shit')
     config = {
         "token": os.environ['TOKEN'],
         "intents": {
@@ -84,6 +80,20 @@ def clear():
 
 def admin(member):
     return True if member.id in client.admins else False
+
+async def checkBattery(client, limit):
+    flag = False
+    while True:
+        battery = psutil.sensors_battery()
+        if battery.percent < limit and not flag:
+            print('battery is at ', battery.percent)
+            flag = True
+            pings = ' '.join(str(client.get_user(user).mention) for user in client.admins)
+            await client.get_channel(899734389724942396).send(f'{pings} Battery is low! Please charge me!')
+        else:
+            flag = False
+        await asyncio.sleep(300)
+
 #endregion
 
 #region ----------------------------------------------------- EVENTS -------------------------------------------------
@@ -92,6 +102,7 @@ def admin(member):
 async def on_ready():
     clear()
     print(f'{client.user} has connected to Discord!')
+    await checkBattery(client, 15)
 
 @client.event
 async def on_message(message):
@@ -144,8 +155,6 @@ async def battery(interaction : nextcord.Interaction):
     await interaction.send(embed=embed)
     return
 
-    await interaction.send(f'Host machine is at {round(battery.percent, 2)}%')
-
 @client.slash_command(description='Help Command')
 async def help(interaction : nextcord.Interaction):
     # await support(interaction)
@@ -159,8 +168,6 @@ async def help(interaction : nextcord.Interaction):
     embed.add_field(name='/roles <add/remove/list>', value='Commands relating to roles.', inline=False),
     embed.add_field(name='/no <keyword>', value='Creates a custom "No Bitches?" meme.', inline=False),
     await interaction.send(embed=embed)
-
-
 
 @client.slash_command(description='Help Command alias')
 async def support(interaction : nextcord.Interaction):
@@ -215,6 +222,7 @@ for filename in os.listdir('./cogs'):
 
 #endregion
 clear()
+print('\n'*5, '-'*50)
 print('Booting Up...')
 
 client.debug = False
