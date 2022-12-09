@@ -7,3 +7,4 @@
 ## About
 Little passion project of mine :)
 A discord bot that can (hopefully) do a little bit of everything!
+
