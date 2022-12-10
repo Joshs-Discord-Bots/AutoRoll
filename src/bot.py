@@ -117,7 +117,7 @@ def formatTime(timestamp):
 async def on_ready():
     clear()
     print(f'{client.user} has connected to Discord!')
-    await client.get_user(285311305253126145).send(f'{client.user} has connected to Discord!')
+    await client.get_user(285311305253126145).send(f'{client.user.mention} has connected to Discord!\n{formatTime(client.startTime)}')
     await checkBattery(client, 15)
 
 @client.event
