@@ -19,17 +19,21 @@ def generate(text, output='cogs/resources/meme.jpg'):
     image.text(textPos, text, font=font, fill=text_color, stroke_width=stroke_width, stroke_fill=stroke_color, anchor="ms")
 
     file.save(output)
+    return
 
 
 
 class Megamind(commands.Cog):
     def __init__(self, client):
         self.client = client
+        return
 
     @nextcord.slash_command(description='Creates a "No __?" meme.')
     async def no(self, interaction: nextcord.Interaction, text: str):
         generate(text)
         await interaction.send("", files=[nextcord.File('cogs/resources/meme.jpg')])
+        return
 
 def setup(client):
     client.add_cog(Megamind(client))
+    return

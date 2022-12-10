@@ -94,17 +94,18 @@ async def checkBattery(client, limit):
         else:
             flag = False
         await asyncio.sleep(300)
+    return
 
 def convertSeconds(seconds):
-        days, seconds = divmod(seconds, 86400)
-        hours, seconds = divmod(seconds, 3600)
-        minutes, seconds = divmod(seconds, 60)
-        time_str = ""
-        if days > 0: time_str += f"{round(days)}d "
-        if hours > 0: time_str += f"{round(hours)}h "
-        if minutes > 0: time_str += f"{round(minutes)}m "
-        if seconds > 0: time_str += f"{round(seconds)}s"
-        return time_str
+    days, seconds = divmod(seconds, 86400)
+    hours, seconds = divmod(seconds, 3600)
+    minutes, seconds = divmod(seconds, 60)
+    time_str = ""
+    if days > 0: time_str += f"{round(days)}d "
+    if hours > 0: time_str += f"{round(hours)}h "
+    if minutes > 0: time_str += f"{round(minutes)}m "
+    if seconds > 0: time_str += f"{round(seconds)}s"
+    return time_str
 
 def formatTime(timestamp):
     return time.strftime("%d/%m/%Y %H:%M:%S", time.gmtime(timestamp + 8 * 3600))
@@ -119,6 +120,7 @@ async def on_ready():
     print(f'{client.user} has connected to Discord!')
     await client.get_user(285311305253126145).send(f'{client.user.mention} has connected to Discord!\n{formatTime(client.startTime)}')
     await checkBattery(client, 15)
+    return
 
 @client.event
 async def on_message(message):
@@ -136,6 +138,7 @@ async def on_member_join(member):
         role = member.guild.get_role(675635324071706654)
         await member.add_roles(role) # BOTS
         print('"' + member.name + '" has been given the BOTS role')
+    return
 
 
 
@@ -153,6 +156,7 @@ async def on_member_join(member):
 @client.slash_command(description='Will return "Pong" if the bot is online.')
 async def ping(interaction : nextcord.Interaction):
     await interaction.send(f'🏓 **Pong!** ({round(client.latency*1000)}ms)')
+    return
 
 
 
@@ -203,6 +207,7 @@ async def support(interaction : nextcord.Interaction):
         description='Hey! Problem with the bot? Want your own bot commissioned?\nSend me a friend request!\n\n@Joshalot#1023',
         color=nextcord.Color.orange())
     await interaction.send(embed=embed)
+    return
 
 @client.slash_command()
 @commands.is_owner()
@@ -214,6 +219,7 @@ async def reload_cogs(interaction : nextcord.Interaction):
     for cog in cogs:
         client.reload_extension(cog)
     await interaction.send('Cogs have been reloaded!')
+    return
 
 
 @client.slash_command()

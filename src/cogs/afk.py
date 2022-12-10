@@ -10,9 +10,11 @@ class Afk(commands.Cog):
             self.afkList = client.read('./cogs/afk.json')
         else:
             self.afkList = {}
+        return
         
     def save(self):
         self.client.write(self.afkList, './cogs/afk.json')
+        return
     
     afkID = 1042296356578017341
 
@@ -33,20 +35,23 @@ class Afk(commands.Cog):
                 await ctx.guild.rules_channel.send(f'Welcome back **{user.name}**! I have removed your AFK status!')
                 self.afkList.pop(str(user.id))
                 self.save()
-                return
+        return
     
     
     @commands.Cog.listener()
     async def on_message(self, message: nextcord.Message):
         await self.setAfk(message.author, message, 'take')
+        return
     
     @commands.Cog.listener()
     async def on_typing(self, message: nextcord.Message, user: nextcord.Member, when: datetime):
         await self.setAfk(user, message, 'take')
+        return
     
     @commands.Cog.listener()
     async def on_voice_state_update(self, member: nextcord.Member, before: nextcord.VoiceState, after: nextcord.VoiceState):
         await self.setAfk(member, member, 'take')
+        return
 
 
     @nextcord.slash_command(description='Set your status to afk')
@@ -61,8 +66,10 @@ class Afk(commands.Cog):
             return
         
         await self.setAfk(interaction.user, interaction)
+        return
 
         
 
 def setup(client):
     client.add_cog(Afk(client))
+    return
