@@ -212,6 +212,3 @@ class AutoRole(commands.Cog):
 def setup(client):
     client.add_cog(AutoRole(client))
     return
-
-# add subcommands
-# https://docs.nextcord.dev/en/stable/interactions.html#:~:text=Slash%20options%20are%20used%20to,additional%20information%20for%20the%20command.&text=The%20option%20can%20be%20type,to%20make%20the%20argument%20optional.

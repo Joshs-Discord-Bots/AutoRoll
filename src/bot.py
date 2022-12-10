@@ -1,7 +1,6 @@
 #region ------------------------------------------------------ SETUP -------------------------------------------------
 
 import nextcord, os, platform, json, psutil, asyncio, time
-from time import sleep
 from nextcord.ext import commands
 
 def read(readFilename, raw=False):
@@ -51,33 +50,18 @@ intents.members = config['intents']['members']
 intents.guilds = config['intents']['guilds']
 intents.voice_states = config['intents']['voice_states']
 
-prefix = config['prefix']
-
-# activity = discord.Game(name=f"{prefix}help")
-# bot = commands.Bot(command_prefix = prefix, intents=intents, activity=activity, status=discord.Status.online, case_insensitive=True)
-# client.remove_command('help')
-
-
-# bot = nextcord.Client()
-client = commands.Bot(command_prefix=prefix, intents=intents)
-client.token = config['token']
-client.admins = config['admins']
+client = commands.Bot(command_prefix=config['prefix'], intents=intents)
 
 client.read = read
 client.write = write
+client.token = config['token']
+client.admins = config['admins']
 client.startTime = time.time()
 
 
 #endregion
 
 #region ------------------------------------------------- CUSTOM FUNCTIONS -------------------------------------------
-
-def clear():
-    return
-    if platform.system() == 'Windows':
-        os.system('cls')
-    else:
-        os.system('clear')
 
 def admin(member):
     return True if member.id in client.admins else False
@@ -123,11 +107,6 @@ async def on_ready():
     return
 
 @client.event
-async def on_message(message):
-    pass
-    # print(message.content)
-
-@client.event
 async def on_member_join(member):
     print('"' + member.name + '" joined')
     if not member.bot:
@@ -140,15 +119,6 @@ async def on_member_join(member):
         print('"' + member.name + '" has been given the BOTS role')
     return
 
-
-
-# @client.event
-# async def on_command_error(ctx, error):
-# 	if isinstance(error, commands.MemberNotFound):
-# 		await ctx.send('That user does not exist!')
-# 	elif isinstance(error, commands.MissingPermissions):
-# 		await ctx.send('You are not allowed to do that!')
-
 #endregion
 
 #region ----------------------------------------------------- COMMANDS -------------------------------------------------
@@ -157,8 +127,6 @@ async def on_member_join(member):
 async def ping(interaction : nextcord.Interaction):
     await interaction.send(f'🏓 **Pong!** ({round(client.latency*1000)}ms)')
     return
-
-
 
 @client.slash_command(description='Will return the battery of the bot.', guild_ids=[330974948870848512])
 async def battery(interaction : nextcord.Interaction):
@@ -186,20 +154,6 @@ async def uptime(interaction : nextcord.Interaction):
     await interaction.send(embed=embed)
     return
 
-@client.slash_command(description='Help Command')
-async def help(interaction : nextcord.Interaction):
-    # await support(interaction)
-    # return
-    
-    embed = nextcord.Embed(
-        title='Help Commands',
-        description=f'Listing commands...',
-        colour=nextcord.Colour.blue())
-    embed.add_field(name='/ping', value='Will return "Pong" if the bot is online.', inline=False),
-    embed.add_field(name='/roles <add/remove/list>', value='Commands relating to roles.', inline=False),
-    embed.add_field(name='/no <keyword>', value='Creates a custom "No Bitches?" meme.', inline=False),
-    await interaction.send(embed=embed)
-
 @client.slash_command(description='Help Command alias')
 async def support(interaction : nextcord.Interaction):
     embed = nextcord.Embed(
@@ -221,25 +175,6 @@ async def reload_cogs(interaction : nextcord.Interaction):
     await interaction.send('Cogs have been reloaded!')
     return
 
-
-@client.slash_command()
-@commands.is_owner()
-async def reload(interaction : nextcord.Interaction):
-    return
-    if admin(interaction.user):
-        await interaction.send('Reloading...')
-        if platform.system() == 'Windows' and os.path.isfile('run.bat'):
-            os.system('run.bat')
-            quit()
-        elif os.path.isfile('run.sh'):
-            os.system('./run.sh')
-            quit()
-        else:
-            await interaction.send('An error has occured')
-    else:
-        await interaction.send('You do not have permission to do that!')
-
-
 #endregion
 
 #region ----------------------------------------------------- COGS -------------------------------------------------
@@ -254,19 +189,14 @@ for filename in os.listdir('./cogs'):
         cogs.append(cog)
 
 #endregion
-clear()
+
 print('\n'*5, '-'*50)
 print('Booting Up...')
 
-client.debug = False
-
 while True:
     try:
-        if client.debug:
-            client.run(read('TEST_AUTH', raw=True))
-        else:
-            client.run(client.token)
+        client.run(client.token)
     except:
         print('Failed to start bot')
         print('Retrying in 5 seconds...')
-        sleep(5)
+        time.sleep(5)
