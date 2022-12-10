@@ -1,6 +1,6 @@
 #region ------------------------------------------------------ SETUP -------------------------------------------------
 
-import nextcord, os, platform, json, psutil, asyncio
+import nextcord, os, platform, json, psutil, asyncio, time
 from time import sleep
 from nextcord.ext import commands
 
@@ -65,6 +65,7 @@ client.admins = config['admins']
 
 client.read = read
 client.write = write
+client.startTime = time.time()
 
 
 #endregion
@@ -93,6 +94,20 @@ async def checkBattery(client, limit):
         else:
             flag = False
         await asyncio.sleep(300)
+
+def convertSeconds(seconds):
+        days, seconds = divmod(seconds, 86400)
+        hours, seconds = divmod(seconds, 3600)
+        minutes, seconds = divmod(seconds, 60)
+        time_str = ""
+        if days > 0: time_str += f"{round(days)}d "
+        if hours > 0: time_str += f"{round(hours)}h "
+        if minutes > 0: time_str += f"{round(minutes)}m "
+        if seconds > 0: time_str += f"{round(seconds)}s"
+        return time_str
+
+def formatTime(timestamp):
+    return time.strftime("%d/%m/%Y %H:%M:%S", time.gmtime(timestamp + 8 * 3600))
 
 #endregion
 
@@ -139,6 +154,8 @@ async def on_member_join(member):
 async def ping(interaction : nextcord.Interaction):
     await interaction.send(f'🏓 **Pong!** ({round(client.latency*1000)}ms)')
 
+
+
 @client.slash_command(description='Will return the battery of the bot.', guild_ids=[330974948870848512])
 async def battery(interaction : nextcord.Interaction):
     battery = psutil.sensors_battery()
@@ -153,6 +170,15 @@ async def battery(interaction : nextcord.Interaction):
     embed.add_field(name='Battery percentage:', value=f'`{round(battery.percent, 2)}%`', inline=False)
     embed.add_field(name='Power plugged in:', value=f'`{battery.power_plugged}`', inline=False)
     embed.add_field(name='Battery time remaining:', value=f'`{convertTime(battery.secsleft)}`', inline=False)
+    await interaction.send(embed=embed)
+    return
+
+@client.slash_command(description='Bot Uptime')
+async def uptime(interaction : nextcord.Interaction):
+    uptime = convertSeconds(time.time() - client.startTime)
+    embed = nextcord.Embed(title=f"{client.user.name} Uptime ⌛", colour=nextcord.Colour.blue())
+    embed.add_field(name='Start Time:', value=f'`{formatTime(client.startTime)}`', inline=False)
+    embed.add_field(name='Uptime:', value=f'`{uptime}`', inline=False)
     await interaction.send(embed=embed)
     return
 
