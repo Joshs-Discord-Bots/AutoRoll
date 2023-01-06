@@ -128,7 +128,7 @@ async def ping(interaction : nextcord.Interaction):
     await interaction.send(f'🏓 **Pong!** ({round(client.latency*1000)}ms)')
     return
 
-@client.slash_command(description='Will return the battery of the bot.', guild_ids=[330974948870848512])
+@client.slash_command(description='Will return the battery of the bot.')
 async def battery(interaction : nextcord.Interaction):
     battery = psutil.sensors_battery()
     colour = nextcord.Colour.green() if battery.percent > 15 else nextcord.Colour.red()
@@ -140,7 +140,7 @@ async def battery(interaction : nextcord.Interaction):
     await interaction.send(embed=embed)
     return
 
-@client.slash_command(description='Bot Uptime')
+@client.slash_command(description='Will return the bot\'s Uptime')
 async def uptime(interaction : nextcord.Interaction):
     uptime = convertSeconds(time.time() - client.startTime)
     embed = nextcord.Embed(title=f"{client.user.name} Uptime ⌛", colour=nextcord.Colour.blue())
