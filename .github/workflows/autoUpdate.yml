@@ -21,8 +21,10 @@ jobs:
         run: |
           echo username: 
           echo $USERNAME
+          echo ${{ secrets.USERNAME }}
           echo test:
           echo $TEST
+          echo ${{ secrets.TEST }}
           echo done
       - name: SSH Remote Commands
         uses: appleboy/ssh-action@v0.1.6
