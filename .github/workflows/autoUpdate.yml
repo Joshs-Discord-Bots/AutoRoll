@@ -17,9 +17,12 @@ jobs:
       - name: testVars
         env:
           USERNAME: ${{ secrets.USERNAME }}
+          TEST: ${{ secrets.TEST }}
         run: |
           echo username: 
           echo $USERNAME
+          echo test:
+          echo $TEST
           echo done
       - name: SSH Remote Commands
         uses: appleboy/ssh-action@v0.1.6
