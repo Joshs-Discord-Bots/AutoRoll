@@ -21,14 +21,8 @@ jobs:
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
           script: |
-            echo cd
-            pwd
             cd discord/AutoRoll
-            pwd
-            echo compose down
             docker compose down
-            echo pull
             git pull
-            echo compose up
             docker compose up -d
 
