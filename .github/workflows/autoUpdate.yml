@@ -15,8 +15,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3.3.0
       - name: testVars
+        env:
+          USERNAME: ${{ secrets.USERNAME }}
         run: |
-          echo ${{ secrets.USERNAME }}
+          echo username: 
+          echo $USERNAME
+          echo done
       - name: SSH Remote Commands
         uses: appleboy/ssh-action@v0.1.6
         with:
