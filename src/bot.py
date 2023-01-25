@@ -161,7 +161,7 @@ async def ip(interaction : nextcord.Interaction):
         await interaction.send('You do not have permission to use this command!')
         return
     
-    ip = subprocess.check_output("curl ifconfig.me", shell=True)
+    ip = requests.get('https://ifconfig.me').content.decode('utf-8')
     await interaction.send(f'The ip is `{ip}`')
     return
 
