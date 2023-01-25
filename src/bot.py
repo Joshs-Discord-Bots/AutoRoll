@@ -174,7 +174,7 @@ async def battery(interaction : nextcord.Interaction):
         hours, minutes = divmod(minutes, 60)
         return "%d:%02d:%02d" % (hours, minutes, seconds)
     
-    embed = nextcord.Embed(title="Server Battery Stats", colour=colour)
+    embed = nextcord.Embed(title="Server Battery Stats 🔋", colour=colour)
     embed.add_field(name='Battery percentage:', value=f'`{round(battery.percent, 2)}%`', inline=False)
     embed.add_field(name='Power plugged in:', value=f'`{battery.power_plugged}`', inline=False)
     embed.add_field(name='Battery time remaining:', value=f'`{convertTime(battery.secsleft)}`', inline=False)
