@@ -1,6 +1,6 @@
 #region ------------------------------------------------------ SETUP -------------------------------------------------
 
-import nextcord, os, platform, json, psutil, asyncio, time, requests
+import nextcord, os, platform, json, psutil, asyncio, time, requests, subprocess
 from time import sleep
 from nextcord.ext import commands
 
@@ -160,8 +160,13 @@ async def ip(interaction : nextcord.Interaction):
         await interaction.send('You do not have permission to use this command!')
         return
     
-    ip = requests.get('https://ifconfig.me').content.decode('utf-8')
-    await interaction.send(f'The ip is `{ip}`')
+    pubIP = requests.get('https://ifconfig.me').content.decode('utf-8')
+    privIP = subprocess.check_output("hostname -I | awk '{print $1}'", shell=True).decode().replace('\n','')
+
+    embed = nextcord.Embed(title='Server IP 💻', colour=nextcord.Colour.blue())
+    embed.add_field(name='Public', value=f'`{pubIP}`', inline=False)
+    embed.add_field(name='Private', value=f'`{pubIP}`', inline=False)
+    await interaction.send(embed=embed, ephemeral=True)
     return
 
 @client.slash_command(description='Will return the battery of the bot.', guild_ids=[330974948870848512])
@@ -174,7 +179,7 @@ async def battery(interaction : nextcord.Interaction):
         hours, minutes = divmod(minutes, 60)
         return "%d:%02d:%02d" % (hours, minutes, seconds)
     
-    embed = nextcord.Embed(title="Server Battery Stats", colour=colour)
+    embed = nextcord.Embed(title="Server Battery Stats 🔋", colour=colour)
     embed.add_field(name='Battery percentage:', value=f'`{round(battery.percent, 2)}%`', inline=False)
     embed.add_field(name='Power plugged in:', value=f'`{battery.power_plugged}`', inline=False)
     embed.add_field(name='Battery time remaining:', value=f'`{convertTime(battery.secsleft)}`', inline=False)
