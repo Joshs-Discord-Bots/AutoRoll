@@ -1,6 +1,6 @@
 #region ------------------------------------------------------ SETUP -------------------------------------------------
 
-import nextcord, os, platform, json, psutil, asyncio, time
+import nextcord, os, platform, json, psutil, asyncio, time, requests
 from time import sleep
 from nextcord.ext import commands
 
@@ -154,7 +154,15 @@ async def on_member_join(member):
 async def ping(interaction : nextcord.Interaction):
     await interaction.send(f'🏓 **Pong!** ({round(client.latency*1000)}ms)')
 
-
+@client.slash_command(description='Will return the bot\'s IP')
+async def ip(interaction : nextcord.Interaction):
+    if not admin(interaction.user):
+        await interaction.send('You do not have permission to use this command!')
+        return
+    
+    ip = requests.get('https://ifconfig.me').content.decode('utf-8')
+    await interaction.send(f'The ip is `{ip}`')
+    return
 
 @client.slash_command(description='Will return the battery of the bot.', guild_ids=[330974948870848512])
 async def battery(interaction : nextcord.Interaction):
