@@ -1,6 +1,6 @@
 #region ------------------------------------------------------ SETUP -------------------------------------------------
 
-import nextcord, os, platform, json, psutil, asyncio, time, requests
+import nextcord, os, platform, json, psutil, asyncio, time, requests, subprocess
 from time import sleep
 from nextcord.ext import commands
 
@@ -160,8 +160,13 @@ async def ip(interaction : nextcord.Interaction):
         await interaction.send('You do not have permission to use this command!')
         return
     
-    ip = requests.get('https://ifconfig.me').content.decode('utf-8')
-    await interaction.send(f'The ip is `{ip}`')
+    pubIP = requests.get('https://ifconfig.me').content.decode('utf-8')
+    privIP = subprocess.check_output("hostname -I | awk '{print $1}'", shell=True).decode().replace('\n','')
+
+    embed = nextcord.Embed(title='Server IP 💻', colour=nextcord.Colour.blue())
+    embed.add_field(name='Public', value=f'`{pubIP}`', inline=False)
+    embed.add_field(name='Private', value=f'`{pubIP}`', inline=False)
+    await interaction.send(embed=embed, ephemeral=True)
     return
 
 @client.slash_command(description='Will return the battery of the bot.', guild_ids=[330974948870848512])
