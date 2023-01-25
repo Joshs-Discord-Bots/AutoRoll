@@ -1,6 +1,6 @@
 #region ------------------------------------------------------ SETUP -------------------------------------------------
 
-import nextcord, os, platform, json, psutil, asyncio, time, subprocess
+import nextcord, os, platform, json, psutil, asyncio, time, subprocess, requests
 from time import sleep
 from nextcord.ext import commands
 
