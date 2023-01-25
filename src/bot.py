@@ -165,7 +165,7 @@ async def ip(interaction : nextcord.Interaction):
 
     embed = nextcord.Embed(title='Server IP 💻', colour=nextcord.Colour.blue())
     embed.add_field(name='Public', value=f'`{pubIP}`', inline=False)
-    embed.add_field(name='Private', value=f'`{pubIP}`', inline=False)
+    embed.add_field(name='Private', value=f'`{privIP}`', inline=False)
     await interaction.send(embed=embed, ephemeral=True)
     return
 
