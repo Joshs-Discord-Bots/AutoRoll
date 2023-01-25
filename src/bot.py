@@ -1,6 +1,6 @@
 #region ------------------------------------------------------ SETUP -------------------------------------------------
 
-import nextcord, os, platform, json, psutil, asyncio, time, subprocess, requests
+import nextcord, os, platform, json, psutil, asyncio, time, requests
 from time import sleep
 from nextcord.ext import commands
 
@@ -154,7 +154,6 @@ async def on_member_join(member):
 async def ping(interaction : nextcord.Interaction):
     await interaction.send(f'🏓 **Pong!** ({round(client.latency*1000)}ms)')
 
-# @client.slash_command(description='Will return "Pong" if the bot is online.', guild_ids=[330974948870848512])
 @client.slash_command(description='Will return the bot\'s IP')
 async def ip(interaction : nextcord.Interaction):
     if not admin(interaction.user):
