@@ -86,7 +86,7 @@ async def checkBattery(client, limit):
     flag = False
     while True:
         battery = psutil.sensors_battery()
-        if battery and battery.percent < limit and not flag:
+        if battery.percent < limit and not flag:
             print('battery is at ', battery.percent)
             flag = True
             pings = ' '.join(str(client.get_user(user).mention) for user in client.admins)
