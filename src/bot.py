@@ -72,9 +72,7 @@ def admin(member):
 
 @client.event																	# Startup
 async def on_ready():
-    clear()
     print(f'{client.user} has connected to Discord!')
-    await checkBattery(client, 15)
     return
 
 @client.event
@@ -124,7 +122,7 @@ async def reload_cogs(interaction : nextcord.Interaction):
 
 #region ----------------------------------------------------- COGS -------------------------------------------------
 
-whitelist = ['roles.py', 'megamind.py', 'afk.py']
+whitelist = ["stats.py"]
 # whitelist = ['test.py', 'roles.py']
 cogs = [] # So we can reload them
 for filename in os.listdir('./cogs'):
