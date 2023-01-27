@@ -29,7 +29,7 @@ if 'TOKEN' in os.environ: # If in docker container
             "voice_states": True if 'VOICE_STATES' in os.environ['INTENTS'] else False,
         },
         "prefix": "$",
-        "admins": [285311305253126145]
+        "admins": [int(dcid) for dcid in os.environ['ADMINS'].split(' ')]
     }
 else:
     if not os.path.isfile('config.json'):
@@ -42,6 +42,8 @@ else:
         write(def_config, 'config.json')
 
     config = read('config.json')
+
+
 
 
 intents = nextcord.Intents.default()
@@ -73,7 +75,8 @@ def admin(member):
 @client.event																	# Startup
 async def on_ready():
     print(f'{client.user} has connected to Discord!')
-    await client.get_user(285311305253126145).send(f'{client.user.mention} has connected to Discord!\n{formatTime(client.startTime)}')
+    await client.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.listening, name = 'Slash Commands!'))
+    await client.get_user(client.admins[0]).send(f'{client.user.mention} has connected to Discord!\n{formatTime(client.startTime)}')
     return
 
 @client.event
