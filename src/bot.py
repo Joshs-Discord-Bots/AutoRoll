@@ -30,7 +30,7 @@ if 'TOKEN' in os.environ: # If in docker container
             "voice_states": True if 'VOICE_STATES' in os.environ['INTENTS'] else False,
         },
         "prefix": "$",
-        "admins": [285311305253126145]
+        "admins": [int(dcid) for dcid in os.environ['ADMINS'].split(' ')]
     }
 else:
     if not os.path.isfile('config.json'):
