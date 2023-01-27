@@ -40,6 +40,8 @@ class Stats(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
+        self.client.startTime = time.time()
+        await self.client.get_user(self.client.admins[0]).send(f'{self.client.user.mention} has connected to Discord! ({self.formatTime(self.client.startTime)})')
         await self.checkBattery(self.client, limit=15)
         return
 

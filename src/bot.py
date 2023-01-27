@@ -57,7 +57,6 @@ client.read = read
 client.write = write
 client.token = config['token']
 client.admins = config['admins']
-client.startTime = time.time()
 
 
 #endregion
@@ -75,7 +74,6 @@ def admin(member):
 async def on_ready():
     print(f'{client.user} has connected to Discord!')
     await client.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.listening, name = 'Slash Commands!'))
-    await client.get_user(client.admins[0]).send(f'{client.user.mention} has connected to Discord!\n{formatTime(client.startTime)}')
     return
 
 @client.event
