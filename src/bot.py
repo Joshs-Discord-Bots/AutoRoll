@@ -45,7 +45,6 @@ else:
 
 
 
-
 intents = nextcord.Intents.default()
 intents.message_content = config['intents']['messages']
 intents.members = config['intents']['members']
@@ -94,21 +93,7 @@ async def on_member_join(member):
 
 #endregion
 
-#region ----------------------------------------------------- COMMANDS -------------------------------------------------
-
-@client.slash_command(description='Will return "Pong" if the bot is online.')
-async def ping(interaction : nextcord.Interaction):
-    await interaction.send(f'🏓 **Pong!** ({round(client.latency*1000)}ms)')
-    return
-
-@client.slash_command(description='Help Command alias')
-async def support(interaction : nextcord.Interaction):
-    embed = nextcord.Embed(
-        title='Bot Support Contact Info',
-        description='Hey! Problem with the bot? Want your own bot commissioned?\nSend me a friend request!\n\n@Joshalot#1023',
-        color=nextcord.Color.orange())
-    await interaction.send(embed=embed)
-    return
+#region ----------------------------------------------------- RELOAD COGS -------------------------------------------------
 
 @client.slash_command()
 @commands.is_owner()
