@@ -22,6 +22,7 @@ def write(data, writeFilename):
 if 'TOKEN' in os.environ: # If in docker container
     config = {
         "token": os.environ['TOKEN'],
+        "devtoken": os.environ['DEVTOKEN'],
         "intents": {
             "messages": True if 'MESSAGES' in os.environ['INTENTS'] else False,
             "members": True if 'MEMBERS' in os.environ['INTENTS'] else False,
@@ -35,6 +36,8 @@ else:
     if not os.path.isfile('config.json'):
         def_config = {
             'token': 'TOKEN',
+            'devtoken': 'DEVTOKEN',
+            'mode': 'NORMAL',
             'intents': {'messages': False, 'members': False, 'guilds': False, 'voice_states': False},
             'prefix': '-',
             'admins': []
@@ -125,7 +128,10 @@ print('Booting Up...')
 
 while True:
     try:
-        client.run(client.token)
+        if 'DEV' in os.environ and 'DEVTOKEN' in os.environ:
+            client.run(os.environ['DEVTOKEN'])
+        else:
+            client.run(client.token)
     except:
         print('Failed to start bot')
         print('Retrying in 5 seconds...')
