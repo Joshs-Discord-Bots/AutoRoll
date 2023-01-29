@@ -112,7 +112,7 @@ async def reload_cogs(interaction : nextcord.Interaction):
 
 #region ----------------------------------------------------- COGS -------------------------------------------------
 
-whitelist = ["stats.py"]
+whitelist = []
 # whitelist = ['test.py', 'roles.py']
 cogs = [] # So we can reload them
 for filename in os.listdir('./cogs'):
@@ -128,7 +128,7 @@ print('Booting Up...')
 
 while True:
     try:
-        if 'DEV' in os.environ and 'DEVTOKEN' in os.environ:
+        if 'DEVMODE' in os.environ and 'DEVTOKEN' in os.environ:
             client.run(os.environ['DEVTOKEN'])
         else:
             client.run(client.token)
