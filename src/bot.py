@@ -1,7 +1,8 @@
 #region ------------------------------------------------------ SETUP -------------------------------------------------
 
 import nextcord, os, platform, json, psutil, asyncio, time
-from nextcord.ext import commands
+from nextcord.interactions import Interaction
+from nextcord.ext import commands, application_checks
 
 print('\n'*5)
 
@@ -59,10 +60,10 @@ client.dev = config['DEVMODE']
 
 #endregion
 
-#region ------------------------------------------------- CUSTOM FUNCTIONS -------------------------------------------
+#region ------------------------------------------------- CUSTOM CHECKS -------------------------------------------
 
-def admin(member):
-    return True if member.id in client.admins else False
+def is_admin(interaction: Interaction):
+    return member.id in client.admins
 
 #endregion
 
@@ -87,6 +88,16 @@ async def on_member_join(member):
         print('"' + member.name + '" has been given the BOTS role')
     return
 
+@client.event
+async def on_application_command_error(interaction, exception):
+    if isinstance(exception, nextcord.ApplicationCheckFailure):
+        await interaction.send('check failiure')
+    else:
+        await interaction.send(exception)
+    return
+
+
+
 #endregion
 
 #region ----------------------------------------------------- RELOAD COGS -------------------------------------------------
@@ -97,7 +108,7 @@ async def reload_cogs(interaction : nextcord.Interaction):
     if not admin(interaction.user):
         await interaction.send('You do not have permission to use this command!')
         return
-    
+
     for cog in cogs:
         client.reload_extension(cog)
     await interaction.send('Cogs have been reloaded!')
@@ -108,7 +119,6 @@ async def reload_cogs(interaction : nextcord.Interaction):
 #region ----------------------------------------------------- COGS -------------------------------------------------
 
 whitelist = []
-# whitelist = ['test.py', 'roles.py']
 cogs = [] # So we can reload them
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py') and filename in whitelist:
@@ -118,13 +128,12 @@ for filename in os.listdir('./cogs'):
 
 #endregion
 
-print('\n'*5)
 print('-'*50)
 print('Booting Up...')
 
 while True:
     try:
-        if config['DEVMODE']
+        if config['DEVMODE']:
             client.run(config['DEVTOKEN'])
         else:
             client.run(config['TOKEN'])
