@@ -3,6 +3,8 @@
 import nextcord, os, platform, json, psutil, asyncio, time
 from nextcord.ext import commands
 
+print('\n'*5)
+
 def read(readFilename, raw=False):
     try:
         with open(readFilename) as file:
@@ -19,48 +21,41 @@ def write(data, writeFilename):
         json.dump(data, outfile, indent=4)
     return
 
-if 'TOKEN' in os.environ: # If in docker container
-    config = {
-        "token": os.environ['TOKEN'],
-        "devtoken": os.environ['DEVTOKEN'],
-        "intents": {
-            "messages": True if 'MESSAGES' in os.environ['INTENTS'] else False,
-            "members": True if 'MEMBERS' in os.environ['INTENTS'] else False,
-            "guilds": True if 'GUILDS' in os.environ['INTENTS'] else False,
-            "voice_states": True if 'VOICE_STATES' in os.environ['INTENTS'] else False,
-        },
-        "prefix": "$",
-        "admins": [int(dcid) for dcid in os.environ['ADMINS'].split(' ')]
-    }
-else:
-    if not os.path.isfile('config.json'):
-        def_config = {
-            'token': 'TOKEN',
-            'devtoken': 'DEVTOKEN',
-            'mode': 'NORMAL',
-            'intents': {'messages': False, 'members': False, 'guilds': False, 'voice_states': False},
-            'prefix': '-',
-            'admins': []
-        }
-        write(def_config, 'config.json')
-
-    config = read('config.json')
+# Create config file
+config = {}
+envTypes = {
+    "str": ['TOKEN', 'DEVTOKEN', 'PREFIX', 'ADMINS'],
+    "bool": ['DEVMODE', 'MESSAGES', 'MEMBERS', 'GUILDS', 'VOICE_STATES']
+}
+# Ensure .env format
+for envType in envTypes:
+    for envVar in envTypes[envType]:
+        envVal = os.environ[envVar]
+        # Convert bool string to bools
+        if envType == 'bool':
+            envVal = os.environ[envVar].lower() in ['true']
+        # Check for missing environment variables
+        if envVar not in os.environ:
+            print(f'"{envVar}" environment variable not initialised! Please ensure you have a VALID .env file')
+            print('Please read the README.md file for more details.')
+            exit()
+        config[envVar] = envVal
 
 
 
 intents = nextcord.Intents.default()
-intents.message_content = config['intents']['messages']
-intents.members = config['intents']['members']
-intents.guilds = config['intents']['guilds']
-intents.voice_states = config['intents']['voice_states']
+intents.message_content = config['MESSAGES']
+intents.members = config['MEMBERS']
+intents.guilds = config['GUILDS']
+intents.voice_states = config['VOICE_STATES']
 
-client = commands.Bot(command_prefix=config['prefix'], intents=intents)
+client = commands.Bot(command_prefix=config['PREFIX'], intents=intents)
 
 client.read = read
 client.write = write
-client.token = config['token']
-client.admins = config['admins']
-
+client.token = config['TOKEN']
+client.admins = config['ADMINS']
+client.dev = config['DEVMODE']
 
 #endregion
 
@@ -123,15 +118,16 @@ for filename in os.listdir('./cogs'):
 
 #endregion
 
-print('\n'*5, '-'*50)
+print('\n'*5)
+print('-'*50)
 print('Booting Up...')
 
 while True:
     try:
-        if 'DEVMODE' in os.environ and 'DEVTOKEN' in os.environ:
-            client.run(os.environ['DEVTOKEN'])
+        if config['DEVMODE']
+            client.run(config['DEVTOKEN'])
         else:
-            client.run(client.token)
+            client.run(config['TOKEN'])
     except:
         print('Failed to start bot')
         print('Retrying in 5 seconds...')
