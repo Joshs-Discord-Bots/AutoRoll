@@ -4,8 +4,6 @@ import nextcord, os, platform, json, psutil, asyncio, time
 from nextcord.interactions import Interaction
 from nextcord.ext import commands, application_checks
 
-print('\n'*5)
-
 def read(readFilename, raw=False):
     try:
         with open(readFilename) as file:
@@ -41,8 +39,6 @@ for envType in envTypes:
             print('Please read the README.md file for more details.')
             exit()
         config[envVar] = envVal
-
-
 
 intents = nextcord.Intents.default()
 intents.message_content = config['MESSAGES']
@@ -95,8 +91,6 @@ async def on_application_command_error(interaction, exception):
     else:
         await interaction.send(exception)
     return
-
-
 
 #endregion
 

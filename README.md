@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/Joshs-Discord-Bots/AutoRoll/blob/main/Images/Bot%20Profile%20Pic.jpg" width="128" height="128">
+  <img src="https://github.com/Joshs-Discord-Bots/AutoRoll/blob/main/src/cogs/resources/Icons/Bot%20Profile%20Pic.jpg" width="128" height="128">
 </p>
 
 <h1 align="center">AutoRoll Discord Bot</h1>
