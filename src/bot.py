@@ -20,6 +20,9 @@ def write(data, writeFilename):
         json.dump(data, outfile, indent=4)
     return
 
+def admin(member):
+    return member.id in client.admins
+
 # Create config file
 config = {}
 envTypes = {
@@ -50,18 +53,14 @@ client = commands.Bot(command_prefix=config['PREFIX'], intents=intents)
 
 client.read = read
 client.write = write
+client.admin = admin
 client.token = config['TOKEN']
-client.admins = config['ADMINS']
+client.admins = [int(id) for id in config['ADMINS'].replace(' ','').split(',')]
 client.dev = config['DEVMODE']
 
 #endregion
 
-#region ------------------------------------------------- CUSTOM CHECKS -------------------------------------------
 
-def is_admin(interaction: Interaction):
-    return member.id in client.admins
-
-#endregion
 
 #region ----------------------------------------------------- EVENTS -------------------------------------------------
 
@@ -89,7 +88,7 @@ async def on_application_command_error(interaction, exception):
     if isinstance(exception, nextcord.ApplicationCheckFailure):
         await interaction.send('check failiure')
     else:
-        await interaction.send(exception)
+        await interaction.send(exception, ephemeral=True)
     return
 
 #endregion
