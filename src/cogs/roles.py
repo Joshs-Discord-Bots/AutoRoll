@@ -3,7 +3,7 @@ from nextcord.ext import commands
 
 # ------------------------------------------ Custom Classes ------------------------------------------
 
-class CustomRoles(commands.cog):
+class CustomRoles(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.roles = client.read('./cogs/roles.json')
