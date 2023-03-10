@@ -3,11 +3,12 @@ from nextcord.ext import commands
 
 # ------------------------------------------ Custom Classes ------------------------------------------
 
-class CustomRoles():
+class CustomRoles(commands.cog):
     def __init__(self, client):
         self.client = client
         self.roles = client.read('./cogs/roles.json')
         if self.roles == None: self.roles = {'games': {}, 'colours': {}}
+        return
     
     # If role is a custom role
     def valid(self, role: nextcord.Role):
@@ -19,6 +20,7 @@ class CustomRoles():
     # Write role data to disk
     def save(self):
         self.client.write(self.roles, './cogs/roles.json')
+        return
 
 # ------------------------------------------ Drop-downs ------------------------------------------
 
@@ -30,10 +32,12 @@ class GameDropdownAdd(nextcord.ui.Select):
         else:
             options = [nextcord.SelectOption(label='No availible games!', description='Click to add')]
             super().__init__(placeholder='No availible games!', options=options, disabled=True)
+        return
     async def callback(self, interaction: nextcord.Interaction):
         for value in self.values:
             await interaction.user.add_roles(interaction.guild.get_role(int(value)))
             await interaction.response.send_message('Role(s) have been given to you.\nUse `/roles remove` to remove it.**Do NOT reuse dropdown**', ephemeral=True)
+        return
 
 # Remove Games Dropdown
 class GameDropdownRemove(nextcord.ui.Select):
@@ -43,15 +47,18 @@ class GameDropdownRemove(nextcord.ui.Select):
         else:
             options = [nextcord.SelectOption(label='No availible games!', description='Click to add')]
             super().__init__(placeholder='No availible games!', options=options, disabled=True)
+        return
     async def callback(self, interaction: nextcord.Interaction):
         for value in self.values:
             await interaction.user.remove_roles(interaction.guild.get_role(int(value)))
             await interaction.response.send_message('Role(s) have been given to you.\nUse `/roles add` to add it.\n**Do NOT reuse dropdown**', ephemeral=True)
+        return
 
 # Add Colours Dropdown
 class ColourDropdownAdd(nextcord.ui.Select):
     def __init__(self, options):
         super().__init__(placeholder='Select a Colour', min_values=0, max_values=1, options=options)
+        return
     async def callback(self, interaction: nextcord.Interaction):
         customRoles = CustomRoles(interaction.client)
         # loop through their roles and remove any existing colour roles
@@ -60,6 +67,7 @@ class ColourDropdownAdd(nextcord.ui.Select):
                 await interaction.user.remove_roles(user_role)
         await interaction.user.add_roles(interaction.guild.get_role(int(self.values[0])))
         await interaction.response.send_message('Role has been given to you.\nUse `/roles remove` to remove it.', ephemeral=True)
+        return
 
 # Asign to view
 class DropdownViewsAdd(nextcord.ui.View):
@@ -67,17 +75,20 @@ class DropdownViewsAdd(nextcord.ui.View):
         super().__init__()
         self.add_item(GameDropdownAdd(gameOptions))
         self.add_item(ColourDropdownAdd(colourOptions))
+        return
 
 class DropdownViewsRemove(nextcord.ui.View):
     def __init__(self, gameOptions):
         super().__init__()
         self.add_item(GameDropdownRemove(gameOptions))
+        return
 
 # ########################################## Bot ##########################################
 
 class AutoRole(commands.Cog):
     def __init__(self, client):
         self.client = client
+        return
     def admin(self, member):
         return True if member.id in self.client.admins else False
 
@@ -200,6 +211,4 @@ class AutoRole(commands.Cog):
 
 def setup(client):
     client.add_cog(AutoRole(client))
-
-# add subcommands
-# https://docs.nextcord.dev/en/stable/interactions.html#:~:text=Slash%20options%20are%20used%20to,additional%20information%20for%20the%20command.&text=The%20option%20can%20be%20type,to%20make%20the%20argument%20optional.
+    return

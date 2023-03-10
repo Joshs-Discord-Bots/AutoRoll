@@ -1,8 +1,8 @@
 #region ------------------------------------------------------ SETUP -------------------------------------------------
 
-import nextcord, os, platform, json, psutil, asyncio, time, requests, subprocess
-from time import sleep
-from nextcord.ext import commands
+import nextcord, os, platform, json, psutil, asyncio, time
+from nextcord.interactions import Interaction
+from nextcord.ext import commands, application_checks
 
 def read(readFilename, raw=False):
     try:
@@ -20,94 +20,46 @@ def write(data, writeFilename):
         json.dump(data, outfile, indent=4)
     return
 
-if 'TOKEN' in os.environ: # If in docker container
-    config = {
-        "token": os.environ['TOKEN'],
-        "intents": {
-            "messages": True if 'MESSAGES' in os.environ['INTENTS'] else False,
-            "members": True if 'MEMBERS' in os.environ['INTENTS'] else False,
-            "guilds": True if 'GUILDS' in os.environ['INTENTS'] else False,
-            "voice_states": True if 'VOICE_STATES' in os.environ['INTENTS'] else False,
-        },
-        "prefix": "$",
-        "admins": [int(dcid) for dcid in os.environ['ADMINS'].split(' ')]
-    }
-else:
-    if not os.path.isfile('config.json'):
-        def_config = {
-            'token': 'TOKEN',
-            'intents': {'messages': False, 'members': False, 'guilds': False, 'voice_states': False},
-            'prefix': '-',
-            'admins': []
-        }
-        write(def_config, 'config.json')
-
-    config = read('config.json')
-
+# Create config file
+config = {}
+envTypes = {
+    "str": ['TOKEN', 'DEVTOKEN', 'PREFIX', 'ADMINS'],
+    "bool": ['DEVMODE', 'MESSAGES', 'MEMBERS', 'GUILDS', 'VOICE_STATES']
+}
+# Ensure .env format
+for envType in envTypes:
+    for envVar in envTypes[envType]:
+        envVal = os.environ[envVar]
+        # Convert bool string to bools
+        if envType == 'bool':
+            envVal = os.environ[envVar].lower() in ['true']
+        # Check for missing environment variables
+        if envVar not in os.environ:
+            print(f'"{envVar}" environment variable not initialised! Please ensure you have a VALID .env file')
+            print('Please read the README.md file for more details.')
+            exit()
+        config[envVar] = envVal
 
 intents = nextcord.Intents.default()
-intents.message_content = config['intents']['messages']
-intents.members = config['intents']['members']
-intents.guilds = config['intents']['guilds']
-intents.voice_states = config['intents']['voice_states']
+intents.message_content = config['MESSAGES']
+intents.members = config['MEMBERS']
+intents.guilds = config['GUILDS']
+intents.voice_states = config['VOICE_STATES']
 
-prefix = config['prefix']
-
-# activity = discord.Game(name=f"{prefix}help")
-# bot = commands.Bot(command_prefix = prefix, intents=intents, activity=activity, status=discord.Status.online, case_insensitive=True)
-# client.remove_command('help')
-
-
-# bot = nextcord.Client()
-client = commands.Bot(command_prefix=prefix, intents=intents)
-client.token = config['token']
-client.admins = config['admins']
+client = commands.Bot(command_prefix=config['PREFIX'], intents=intents)
 
 client.read = read
 client.write = write
-client.startTime = time.time()
-
+client.token = config['TOKEN']
+client.admins = config['ADMINS']
+client.dev = config['DEVMODE']
 
 #endregion
 
-#region ------------------------------------------------- CUSTOM FUNCTIONS -------------------------------------------
+#region ------------------------------------------------- CUSTOM CHECKS -------------------------------------------
 
-def clear():
-    return
-    if platform.system() == 'Windows':
-        os.system('cls')
-    else:
-        os.system('clear')
-
-def admin(member):
-    return True if member.id in client.admins else False
-
-async def checkBattery(client, limit):
-    flag = False
-    while True:
-        battery = psutil.sensors_battery()
-        if battery.percent < limit and not flag:
-            print('battery is at ', battery.percent)
-            flag = True
-            pings = ' '.join(str(client.get_user(user).mention) for user in client.admins)
-            await client.get_channel(899734389724942396).send(f'{pings} Battery is low! Please charge me!')
-        else:
-            flag = False
-        await asyncio.sleep(300)
-
-def convertSeconds(seconds):
-        days, seconds = divmod(seconds, 86400)
-        hours, seconds = divmod(seconds, 3600)
-        minutes, seconds = divmod(seconds, 60)
-        time_str = ""
-        if days > 0: time_str += f"{round(days)}d "
-        if hours > 0: time_str += f"{round(hours)}h "
-        if minutes > 0: time_str += f"{round(minutes)}m "
-        if seconds > 0: time_str += f"{round(seconds)}s"
-        return time_str
-
-def formatTime(timestamp):
-    return time.strftime("%d/%m/%Y %H:%M:%S", time.gmtime(timestamp + 8 * 3600))
+def is_admin(interaction: Interaction):
+    return member.id in client.admins
 
 #endregion
 
@@ -115,15 +67,9 @@ def formatTime(timestamp):
 
 @client.event																	# Startup
 async def on_ready():
-    clear()
     print(f'{client.user} has connected to Discord!')
-    await client.get_user(client.admins[0]).send(f'{client.user} has connected to Discord!')
-    await checkBattery(client, 15)
-
-@client.event
-async def on_message(message):
-    pass
-    # print(message.content)
+    await client.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.listening, name = 'Slash Commands!'))
+    return
 
 @client.event
 async def on_member_join(member):
@@ -136,86 +82,19 @@ async def on_member_join(member):
         role = member.guild.get_role(675635324071706654)
         await member.add_roles(role) # BOTS
         print('"' + member.name + '" has been given the BOTS role')
+    return
 
-
-
-# @client.event
-# async def on_command_error(ctx, error):
-# 	if isinstance(error, commands.MemberNotFound):
-# 		await ctx.send('That user does not exist!')
-# 	elif isinstance(error, commands.MissingPermissions):
-# 		await ctx.send('You are not allowed to do that!')
+@client.event
+async def on_application_command_error(interaction, exception):
+    if isinstance(exception, nextcord.ApplicationCheckFailure):
+        await interaction.send('check failiure')
+    else:
+        await interaction.send(exception)
+    return
 
 #endregion
 
-#region ----------------------------------------------------- COMMANDS -------------------------------------------------
-
-@client.slash_command(description='Will return "Pong" if the bot is online.')
-async def ping(interaction : nextcord.Interaction):
-    await interaction.send(f'🏓 **Pong!** ({round(client.latency*1000)}ms)')
-
-@client.slash_command(description='Will return the bot\'s IP')
-async def ip(interaction : nextcord.Interaction):
-    if not admin(interaction.user):
-        await interaction.send('You do not have permission to use this command!')
-        return
-    
-    pubIP = requests.get('https://ifconfig.me').content.decode('utf-8')
-    privIP = subprocess.check_output("hostname -I | awk '{print $1}'", shell=True).decode().replace('\n','')
-
-    embed = nextcord.Embed(title='Server IP 💻', colour=nextcord.Colour.blue())
-    embed.add_field(name='Public', value=f'`{pubIP}`', inline=False)
-    embed.add_field(name='Private', value=f'`{privIP}`', inline=False)
-    await interaction.send(embed=embed, ephemeral=True)
-    return
-
-@client.slash_command(description='Will return the battery of the bot.', guild_ids=[330974948870848512])
-async def battery(interaction : nextcord.Interaction):
-    battery = psutil.sensors_battery()
-    colour = nextcord.Colour.green() if battery.percent > 15 else nextcord.Colour.red()
-
-    def convertTime(seconds):
-        minutes, seconds = divmod(seconds, 60)
-        hours, minutes = divmod(minutes, 60)
-        return "%d:%02d:%02d" % (hours, minutes, seconds)
-    
-    embed = nextcord.Embed(title="Server Battery Stats 🔋", colour=colour)
-    embed.add_field(name='Battery percentage:', value=f'`{round(battery.percent, 2)}%`', inline=False)
-    embed.add_field(name='Power plugged in:', value=f'`{battery.power_plugged}`', inline=False)
-    embed.add_field(name='Battery time remaining:', value=f'`{convertTime(battery.secsleft)}`', inline=False)
-    await interaction.send(embed=embed)
-    return
-
-@client.slash_command(description='Bot Uptime')
-async def uptime(interaction : nextcord.Interaction):
-    uptime = convertSeconds(time.time() - client.startTime)
-    embed = nextcord.Embed(title=f"{client.user.name} Uptime ⌛", colour=nextcord.Colour.blue())
-    embed.add_field(name='Start Time:', value=f'`{formatTime(client.startTime)}`', inline=False)
-    embed.add_field(name='Uptime:', value=f'`{uptime}`', inline=False)
-    await interaction.send(embed=embed)
-    return
-
-@client.slash_command(description='Help Command')
-async def help(interaction : nextcord.Interaction):
-    # await support(interaction)
-    # return
-    
-    embed = nextcord.Embed(
-        title='Help Commands',
-        description=f'Listing commands...',
-        colour=nextcord.Colour.blue())
-    embed.add_field(name='/ping', value='Will return "Pong" if the bot is online.', inline=False),
-    embed.add_field(name='/roles <add/remove/list>', value='Commands relating to roles.', inline=False),
-    embed.add_field(name='/no <keyword>', value='Creates a custom "No Bitches?" meme.', inline=False),
-    await interaction.send(embed=embed)
-
-@client.slash_command(description='Help Command alias')
-async def support(interaction : nextcord.Interaction):
-    embed = nextcord.Embed(
-        title='Bot Support Contact Info',
-        description='Hey! Problem with the bot? Want your own bot commissioned?\nSend me a friend request!\n\n@Joshalot#1023',
-        color=nextcord.Color.orange())
-    await interaction.send(embed=embed)
+#region ----------------------------------------------------- RELOAD COGS -------------------------------------------------
 
 @client.slash_command()
 @commands.is_owner()
@@ -223,36 +102,17 @@ async def reload_cogs(interaction : nextcord.Interaction):
     if not admin(interaction.user):
         await interaction.send('You do not have permission to use this command!')
         return
-    
+
     for cog in cogs:
         client.reload_extension(cog)
     await interaction.send('Cogs have been reloaded!')
-
-
-@client.slash_command()
-@commands.is_owner()
-async def reload(interaction : nextcord.Interaction):
     return
-    if admin(interaction.user):
-        await interaction.send('Reloading...')
-        if platform.system() == 'Windows' and os.path.isfile('run.bat'):
-            os.system('run.bat')
-            quit()
-        elif os.path.isfile('run.sh'):
-            os.system('./run.sh')
-            quit()
-        else:
-            await interaction.send('An error has occured')
-    else:
-        await interaction.send('You do not have permission to do that!')
-
 
 #endregion
 
 #region ----------------------------------------------------- COGS -------------------------------------------------
 
-whitelist = ['roles.py', 'afk.py']
-# whitelist = ['test.py', 'roles.py']
+whitelist = ['misc.py', 'roles.py', 'stats.py', 'afk.py']
 cogs = [] # So we can reload them
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py') and filename in whitelist:
@@ -261,20 +121,17 @@ for filename in os.listdir('./cogs'):
         cogs.append(cog)
 
 #endregion
-clear()
-print('\n'*5, '-'*50)
-print('Booting Up...')
 
-client.debug = False
+print('-'*50)
+print('Booting Up...')
 
 while True:
     try:
-        if client.debug:
-            client.run(read('TEST_AUTH', raw=True))
+        if config['DEVMODE']:
+            client.run(config['DEVTOKEN'])
         else:
-            client.run(client.token)
+            client.run(config['TOKEN'])
     except:
         print('Failed to start bot')
         print('Retrying in 5 seconds...')
-        sleep(5)
-        
+        time.sleep(10)
