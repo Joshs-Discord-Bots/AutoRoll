@@ -50,11 +50,12 @@ class Stats(commands.Cog):
     @nextcord.slash_command(description='Display Host Machine Stats')
     async def stats(self):
         return
-    
+
     @stats.subcommand(description='Returns all bot metrics.')
     async def all(self, interaction : nextcord.Interaction):
         await self.uptime(interaction)
         await self.battery(interaction)
+        await self.ip(interaction)
         return
 
 
@@ -63,7 +64,7 @@ class Stats(commands.Cog):
         if not self.client.admin(interaction.user):
             await interaction.send('You do not have permission to use this command!')
             return
-        
+
         pubIP = requests.get('https://ifconfig.me').content.decode('utf-8')
         privIP = subprocess.check_output("hostname -I | awk '{print $1}'", shell=True).decode().replace('\n','')
 
