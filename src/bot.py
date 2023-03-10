@@ -112,7 +112,7 @@ async def reload_cogs(interaction : nextcord.Interaction):
 
 #region ----------------------------------------------------- COGS -------------------------------------------------
 
-whitelist = []
+whitelist = ['misc.py', 'roles.py', 'stats.py', 'afk.py']
 cogs = [] # So we can reload them
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py') and filename in whitelist:
@@ -134,4 +134,4 @@ while True:
     except:
         print('Failed to start bot')
         print('Retrying in 5 seconds...')
-        time.sleep(5)
+        time.sleep(10)
