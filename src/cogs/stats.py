@@ -1,4 +1,4 @@
-import nextcord, psutil, asyncio, time
+import nextcord, psutil, asyncio, time, requests, subprocess
 from nextcord.ext import commands
 
 class Stats(commands.Cog):
@@ -47,7 +47,7 @@ class Stats(commands.Cog):
 
 
 
-    @nextcord.slash_command(description='Add/Remove roles')
+    @nextcord.slash_command(description='Display Host Machine Stats')
     async def stats(self):
         return
     
@@ -56,6 +56,24 @@ class Stats(commands.Cog):
         await self.uptime(interaction)
         await self.battery(interaction)
         return
+
+
+    @stats.subcommand(description='Will return the bot\'s IP')
+    async def ip(self, interaction : nextcord.Interaction):
+        if not self.client.admin(interaction.user):
+            await interaction.send('You do not have permission to use this command!')
+            return
+        
+        pubIP = requests.get('https://ifconfig.me').content.decode('utf-8')
+        privIP = subprocess.check_output("hostname -I | awk '{print $1}'", shell=True).decode().replace('\n','')
+
+        embed = nextcord.Embed(title='Server IP 💻', colour=nextcord.Colour.blue())
+        embed.add_field(name='Public', value=f'`{pubIP}`', inline=False)
+        embed.add_field(name='Private', value=f'`{privIP}`', inline=False)
+        await interaction.send(embed=embed, ephemeral=True)
+        return
+
+
 
     @stats.subcommand(description='Will return the battery of the bot.')
     async def battery(self, interaction : nextcord.Interaction):
