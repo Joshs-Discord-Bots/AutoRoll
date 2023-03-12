@@ -6,12 +6,12 @@ class Misc(commands.Cog):
         self.client = client
         return
 
-    @nextcord.slash_command(name='Ping', description='Will return "Pong" if the bot is online.')
+    @nextcord.slash_command(description='Will return "Pong" if the bot is online.')
     async def ping(self, interaction : nextcord.Interaction):
-        await interaction.send(f'🏓 **Pong!** ({round(client.latency*1000)}ms)')
+        await interaction.send(f'🏓 **Pong!** ({round(self.client.latency*1000)}ms)')
         return
 
-    @nextcord.slash_command(name='Help', description='Help Command alias')
+    @nextcord.slash_command(description='Help Command alias')
     async def support(self, interaction : nextcord.Interaction):
         embed = nextcord.Embed(
             title='Bot Support Contact Info',
