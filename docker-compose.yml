@@ -6,4 +6,10 @@ services:
     working_dir: /app
     env_file:
       - ./src/.env
-    command: sh -c "echo "Installing_Dependencies..." && pip install -r requirements.txt && pip install --upgrade pip && echo "Running_Bot..." && python -u ./bot.py"
+    command: >
+      bash -c "
+        echo "Installing_Dependencies..." && 
+        pip install -r requirements.txt && 
+        pip install --upgrade pip && 
+        echo "Running_Bot..." && 
+        python -u ./bot.py"
