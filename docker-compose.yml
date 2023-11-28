@@ -1,6 +1,7 @@
 services:
   app:
     image: python:3.10-slim
+    network_mode: "host"
     volumes:
       - ./src:/app
     working_dir: /app
