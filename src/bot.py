@@ -47,8 +47,7 @@ for envType in envTypes:
             envVal = os.environ[envVar].lower() in ['true']
         # Check for missing environment variables
         if envVar not in os.environ:
-            print(f'"{
-                  envVar}" environment variable not initialised! Please ensure you have a VALID .env file')
+            print(f'"{envVar}" environment variable not initialised! Please ensure you have a VALID .env file')
             print('Please read the README.md file for more details.')
             exit()
         config[envVar] = envVal
@@ -65,8 +64,7 @@ client.read = read
 client.write = write
 client.admin = admin
 client.token = config['TOKEN']
-client.admins = [int(id)
-                 for id in config['ADMINS'].replace(' ', '').split(',')]
+client.admins = [int(id) for id in config['ADMINS'].replace(' ', '').split(',')]
 client.dev = config['DEVMODE']
 
 
