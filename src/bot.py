@@ -1,8 +1,14 @@
-#region ------------------------------------------------------ SETUP -------------------------------------------------
-
-import nextcord, os, platform, json, psutil, asyncio, time
-from nextcord.interactions import Interaction
+import time
+import asyncio
+import psutil
+import json
+import platform
+import os
+import nextcord
 from nextcord.ext import commands, application_checks
+from nextcord.interactions import Interaction
+# ------------------------------------------------------ SETUP - ------------------------------------------------
+
 
 def read(readFilename, raw=False):
     try:
@@ -15,13 +21,16 @@ def read(readFilename, raw=False):
         print('File not found!')
         return None
 
+
 def write(data, writeFilename):
     with open(writeFilename, 'w') as outfile:
         json.dump(data, outfile, indent=4)
     return
 
+
 def admin(member):
     return member.id in client.admins
+
 
 # Create config file
 config = {}
@@ -38,7 +47,8 @@ for envType in envTypes:
             envVal = os.environ[envVar].lower() in ['true']
         # Check for missing environment variables
         if envVar not in os.environ:
-            print(f'"{envVar}" environment variable not initialised! Please ensure you have a VALID .env file')
+            print(f'"{
+                  envVar}" environment variable not initialised! Please ensure you have a VALID .env file')
             print('Please read the README.md file for more details.')
             exit()
         config[envVar] = envVal
@@ -55,33 +65,33 @@ client.read = read
 client.write = write
 client.admin = admin
 client.token = config['TOKEN']
-client.admins = [int(id) for id in config['ADMINS'].replace(' ','').split(',')]
+client.admins = [int(id)
+                 for id in config['ADMINS'].replace(' ', '').split(',')]
 client.dev = config['DEVMODE']
 
-#endregion
 
-
-
-#region ----------------------------------------------------- EVENTS -------------------------------------------------
+# ----------------------------------------------------- EVENTS -------------------------------------------------
 
 @client.event																	# Startup
 async def on_ready():
     print(f'{client.user} has connected to Discord!')
-    await client.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.listening, name = 'Slash Commands!'))
+    await client.change_presence(activity=nextcord.Activity(type=nextcord.ActivityType.listening, name='Slash Commands!'))
     return
+
 
 @client.event
 async def on_member_join(member):
     print('"' + member.name + '" joined')
     if not member.bot:
         role = member.guild.get_role(870593338468872192)
-        await member.add_roles(role) # Silence
+        await member.add_roles(role)  # Silence
         print('"' + member.name + '" has been silenced')
     else:
         role = member.guild.get_role(675635324071706654)
-        await member.add_roles(role) # BOTS
+        await member.add_roles(role)  # BOTS
         print('"' + member.name + '" has been given the BOTS role')
     return
+
 
 @client.event
 async def on_application_command_error(interaction, exception):
@@ -91,13 +101,13 @@ async def on_application_command_error(interaction, exception):
         await interaction.send(exception, ephemeral=True)
     return
 
-#endregion
 
-#region ----------------------------------------------------- RELOAD COGS -------------------------------------------------
+# ----------------------------------------------------- RELOAD COGS -------------------------------------------------
+
 
 @client.slash_command()
 @commands.is_owner()
-async def reload_cogs(interaction : nextcord.Interaction):
+async def reload_cogs(interaction: nextcord.Interaction):
     if not admin(interaction.user):
         await interaction.send('You do not have permission to use this command!')
         return
@@ -107,19 +117,17 @@ async def reload_cogs(interaction : nextcord.Interaction):
     await interaction.send('Cogs have been reloaded!')
     return
 
-#endregion
 
-#region ----------------------------------------------------- COGS -------------------------------------------------
+# ----------------------------------------------------- COGS -------------------------------------------------
 
 whitelist = ['misc.py', 'roles.py', 'stats.py']
-cogs = [] # So we can reload them
+cogs = []  # So we can reload them
 for filename in os.listdir('./cogs'):
     if filename.endswith('.py') and filename in whitelist:
         cog = f'cogs.{filename[:-3]}'
         client.load_extension(cog)
         cogs.append(cog)
 
-#endregion
 
 print('-'*50)
 print('Booting Up...')
